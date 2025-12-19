@@ -1,3 +1,5 @@
+import numbers
+
 import numpy as np
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils import check_random_state
@@ -80,7 +82,7 @@ class KMeans(ClusterMixin, BaseEstimator):
                 f"The 'max_iter' parameter must be an int in the range [1, inf). "
                 f"Got '{self.max_iter}' instead."
             )
-        if not (isinstance(self.e, float) or isinstance(self.e, int)) or self.e < 0:
+        if not isinstance(self.e, numbers.Real) or self.e < 0:
             raise ValueError(
                 f"The 'e' parameter must be a float in the range [0, inf). "
                 f"Got '{self.e}' instead."

@@ -1,3 +1,4 @@
+import numbers
 from collections import deque
 
 import numpy as np
@@ -72,7 +73,7 @@ class DBSCAN(ClusterMixin, BaseEstimator):
         return len(neighbors) >= self.min_samples - 1
 
     def __validate_params(self):
-        if not (isinstance(self.eps, float) or isinstance(self.eps, int)) or self.eps <= 0:
+        if not isinstance(self.eps, numbers.Real) or self.eps <= 0:
             raise ValueError(
                 f"The 'eps' parameter must be a float in the range (0, inf). "
                 f"Got '{self.eps}' instead."
