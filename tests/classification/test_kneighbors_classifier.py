@@ -1,8 +1,9 @@
 import numpy as np
-from src.simple_sklearn.classification.KNeighborsClassifier import KNeighborsClassifier
+import numpy.testing as npt
 from sklearn.neighbors import KNeighborsClassifier as SKKNN
 from sklearn.utils.estimator_checks import estimator_checks_generator
-import numpy.testing as npt
+
+from src.simple_sklearn.classification.KNeighborsClassifier import KNeighborsClassifier
 
 
 def test_kneighbors_predict_and_kneighbors_match_sklearn():

@@ -1,6 +1,7 @@
 import numpy as np
-from src.simple_sklearn.classification.DecisionTreeClassifier import DecisionTreeClassifier
 from sklearn.utils.estimator_checks import estimator_checks_generator
+
+from src.simple_sklearn.classification.DecisionTreeClassifier import DecisionTreeClassifier
 
 
 def test_decision_tree_predict_and_tree_structure():

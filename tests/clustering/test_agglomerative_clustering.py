@@ -1,8 +1,9 @@
 import numpy as np
-from sklearn.cluster import AgglomerativeClustering as SKAgg
-from src.simple_sklearn.clustering.AgglomerativeClustering import AgglomerativeClustering
-from sklearn.utils.estimator_checks import estimator_checks_generator
 import numpy.testing as npt
+from sklearn.cluster import AgglomerativeClustering as SKAgg
+from sklearn.utils.estimator_checks import estimator_checks_generator
+
+from src.simple_sklearn.clustering.AgglomerativeClustering import AgglomerativeClustering
 
 
 def _small_dataset():

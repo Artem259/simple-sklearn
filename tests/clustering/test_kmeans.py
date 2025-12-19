@@ -1,9 +1,10 @@
 import numpy as np
+import numpy.testing as npt
 from sklearn.cluster import KMeans as SKKMeans
-from src.simple_sklearn.clustering.KMeans import KMeans
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.utils.estimator_checks import estimator_checks_generator
-import numpy.testing as npt
+
+from src.simple_sklearn.clustering.KMeans import KMeans
 
 
 def test_kmeans_matches_sklearn_on_small_dataset():

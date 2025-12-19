@@ -1,5 +1,6 @@
-import numpy as np
 from collections import deque
+
+import numpy as np
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import validate_data
 
