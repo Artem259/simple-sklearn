@@ -7,3 +7,7 @@
 
 # Exclude Jupyter Notebook checkpoints
 **/.ipynb_checkpoints/
+
+# Exclude build artifacts
+/dist/
+**/*.egg-info

@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "simple-sklearn"
+dynamic = ["version"]
+authors = [
+  { name="Artem Poliakov", email="artem4250@gmail.com" },
+]
+description = ""  # TODO
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "scikit-learn>=1.6.1",
+    "numpy>=1.26",
+    "pandas>=2.2.3",
+    "matplotlib>=3.9.4",
+    "scipy>=1.13.1",
+    "seaborn>=0.13.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "notebook>=7.3.2",
+    "pytest==8.4.2",
+    "ruff==0.14.9",
+]
+
+[project.urls]
+Homepage = "https://github.com/Artem259/simple-sklearn"
+
+[tool.setuptools.dynamic]
+version = {attr = "simple_sklearn.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra -q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM"]
+fixable = ["ALL"]
+unfixable = []
