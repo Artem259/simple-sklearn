@@ -3,7 +3,7 @@ from scipy.spatial import distance
 
 
 def calc_zip_distances(set1, set2, distance_metric='euclidean'):
-    return [distance.cdist([p1], [p2], metric=distance_metric)[0][0] for p1, p2 in zip(set1, set2)]
+    return [distance.cdist([p1], [p2], metric=distance_metric)[0][0] for p1, p2 in zip(set1, set2, strict=True)]
 
 
 def calc_max_zip_distance(set1, set2, distance_metric='euclidean'):

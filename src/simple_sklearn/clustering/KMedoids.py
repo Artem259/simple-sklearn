@@ -36,5 +36,5 @@ class KMedoids(KMeans):
 
 def _convert_kmeans_cluster_centers(X, kmeans_cluster_centers):
     indices_with_centers = [tools.find_closest_point(X, center) for center in kmeans_cluster_centers]
-    indices, centers = zip(*indices_with_centers)
+    indices, centers = zip(*indices_with_centers, strict=True)
     return np.array(indices), np.array(centers)
