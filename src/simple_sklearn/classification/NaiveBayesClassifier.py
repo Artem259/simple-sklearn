@@ -40,12 +40,12 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
             df_grouped = df.groupby('y')['feat_v']
             grouped_counts = df_grouped.value_counts()
             log_probs = grouped_counts.groupby(level=0).apply(
-                lambda x: np.log((x + 1) / (sum(x) + unique_num))
+                lambda x, u=unique_num: np.log((x + 1) / (sum(x) + u))
             ).reset_index(level=1, drop=True)
             self.feature_log_prob_.append(log_probs)
 
             unknown_log_probs = df_grouped.apply(
-                lambda x: np.log(1 / (len(x) + unique_num))
+                lambda x, u=unique_num: np.log(1 / (len(x) + u))
             )
             self.feature_unknown_log_probs_.append(unknown_log_probs)
 
@@ -66,7 +66,7 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
         decision_scores = []
         for x in X:
             x_feature_log_probs = feature_probs_concat.groupby(level=[0, 'y']).apply(
-                lambda group: self._insert_missing_probs(group, x)
+                lambda group, x=x: self._insert_missing_probs(group, x)
             )
             x_decision_scores = x_feature_log_probs.groupby('y').sum() + self.class_log_prior_
             decision_scores.append(x_decision_scores)
