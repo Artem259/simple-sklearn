@@ -9,5 +9,6 @@
 **/.ipynb_checkpoints/
 
 # Exclude build artifacts
+/build/
 /dist/
 **/*.egg-info
