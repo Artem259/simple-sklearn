@@ -3,7 +3,7 @@ import numpy.testing as npt
 from sklearn.naive_bayes import CategoricalNB
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from src.simple_sklearn.classification.NaiveBayesClassifier import NaiveBayesClassifier
+from simple_sklearn.classification.naive_bayes import NaiveBayesClassifier
 
 
 def test_naive_bayes_matches_sklearn_categorical_nb():

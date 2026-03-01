@@ -1,10 +1,10 @@
 import numpy as np
 import numpy.testing as npt
-from sklearn.cluster import KMeans as SKKMeans
+import sklearn
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from src.simple_sklearn.clustering.KMeans import KMeans
+from simple_sklearn.clustering.k_means import KMeans
 
 
 def test_kmeans_matches_sklearn_on_small_dataset():
@@ -22,7 +22,7 @@ def test_kmeans_matches_sklearn_on_small_dataset():
     custom = KMeans(n_clusters=n_clusters, init=init, max_iter=max_iter, random_state=random_state)
     custom.fit(X)
 
-    sk = SKKMeans(n_clusters=n_clusters, init=init, max_iter=max_iter, random_state=random_state)
+    sk = sklearn.cluster.KMeans(n_clusters=n_clusters, init=init, max_iter=max_iter, random_state=random_state)
     sk.fit(X)
 
     # labels may be permuted but adjusted_rand_score should be 1.0

@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from src.simple_sklearn.classification.OneRClassifier import OneRClassifier
+from simple_sklearn.classification.one_r import OneRClassifier
 
 
 def test_one_r_basic_rule_and_predict():

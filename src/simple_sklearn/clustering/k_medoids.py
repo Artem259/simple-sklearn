@@ -1,7 +1,7 @@
 import numpy as np
 
 from . import tools
-from .KMeans import KMeans
+from .k_means import KMeans
 
 
 class KMedoids(KMeans):

@@ -1,9 +1,9 @@
 import numpy as np
-from sklearn.cluster import DBSCAN as SKDBSCAN
+import sklearn
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from src.simple_sklearn.clustering.DBSCAN import DBSCAN
+from simple_sklearn.clustering.dbscan import DBSCAN
 
 
 def test_dbscan_matches_sklearn_on_simple_data():
@@ -22,7 +22,7 @@ def test_dbscan_matches_sklearn_on_simple_data():
     custom = DBSCAN(eps=eps, min_samples=min_samples)
     custom.fit(X)
 
-    sk = SKDBSCAN(eps=eps, min_samples=min_samples)
+    sk = sklearn.cluster.DBSCAN(eps=eps, min_samples=min_samples)
     sk.fit(X)
 
     ars = adjusted_rand_score(custom.labels_, sk.labels_)

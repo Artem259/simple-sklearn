@@ -1,9 +1,9 @@
 import numpy as np
 import numpy.testing as npt
-from sklearn.cluster import AgglomerativeClustering as SKAgg
+import sklearn
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from src.simple_sklearn.clustering.AgglomerativeClustering import AgglomerativeClustering
+from simple_sklearn.clustering.agglomerative import AgglomerativeClustering
 
 
 def _small_dataset():
@@ -20,7 +20,7 @@ def test_agglomerative_distances_match_sklearn_for_linkages():
         custom = AgglomerativeClustering(n_clusters=2, linkage=linkage)
         custom.fit(X)
 
-        sk = SKAgg(n_clusters=2, linkage=linkage, compute_distances=True)
+        sk = sklearn.cluster.AgglomerativeClustering(n_clusters=2, linkage=linkage, compute_distances=True)
         sk.fit(X)
 
         npt.assert_allclose(custom.distances_, sk.distances_, rtol=1e-6, atol=1e-8)

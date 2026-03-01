@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from src.simple_sklearn.clustering.KMedoids import KMedoids
+from simple_sklearn.clustering.k_medoids import KMedoids
 
 
 def test_kmedoids_basic_properties():

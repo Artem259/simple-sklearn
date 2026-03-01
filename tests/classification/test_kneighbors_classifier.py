@@ -1,9 +1,9 @@
 import numpy as np
 import numpy.testing as npt
-from sklearn.neighbors import KNeighborsClassifier as SKKNN
+import sklearn
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from src.simple_sklearn.classification.KNeighborsClassifier import KNeighborsClassifier
+from simple_sklearn.classification.k_neighbors import KNeighborsClassifier
 
 
 def test_kneighbors_predict_and_kneighbors_match_sklearn():
@@ -24,7 +24,7 @@ def test_kneighbors_predict_and_kneighbors_match_sklearn():
     y_pred = clf.predict(X_pred)
 
     # compare to sklearn
-    sk = SKKNN(n_neighbors=3, weights='uniform')
+    sk = sklearn.neighbors.KNeighborsClassifier(n_neighbors=3, weights='uniform')
     sk.fit(X, y)
     sk_y_pred = sk.predict(X_pred)
 

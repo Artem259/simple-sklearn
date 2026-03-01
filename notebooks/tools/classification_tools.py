@@ -1,9 +1,9 @@
 import sklearn
 
-from src.simple_sklearn.classification.OneRClassifier import OneRClassifier
-from src.simple_sklearn.classification.NaiveBayesClassifier import NaiveBayesClassifier
-from src.simple_sklearn.classification.DecisionTreeClassifier import DecisionTreeClassifier, DecisionTreeNode
-from src.simple_sklearn.classification.KNeighborsClassifier import KNeighborsClassifier
+from src.simple_sklearn.classification.one_r import OneRClassifier
+from src.simple_sklearn.classification.naive_bayes import NaiveBayesClassifier
+from src.simple_sklearn.classification.decision_tree import DecisionTreeClassifier, DecisionTreeNode
+from src.simple_sklearn.classification.k_neighbors import KNeighborsClassifier
 
 
 def OneRClassifier_info(clf: OneRClassifier):
