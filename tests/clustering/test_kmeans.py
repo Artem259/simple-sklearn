@@ -9,12 +9,14 @@ from simple_sklearn.clustering.k_means import KMeans
 
 def test_kmeans_matches_sklearn_on_small_dataset():
     # three well-separated clusters
-    X = np.vstack([
-        np.random.RandomState(0).normal(loc=[0,0], scale=0.1, size=(5,2)),
-        np.random.RandomState(1).normal(loc=[5,5], scale=0.1, size=(5,2)),
-        np.random.RandomState(2).normal(loc=[10,0], scale=0.1, size=(5,2)),
-    ])
-    init = np.array([[0,0],[5,5],[10,0]])
+    X = np.vstack(
+        [
+            np.random.RandomState(0).normal(loc=[0, 0], scale=0.1, size=(5, 2)),
+            np.random.RandomState(1).normal(loc=[5, 5], scale=0.1, size=(5, 2)),
+            np.random.RandomState(2).normal(loc=[10, 0], scale=0.1, size=(5, 2)),
+        ]
+    )
+    init = np.array([[0, 0], [5, 5], [10, 0]])
     n_clusters = 3
     max_iter = 10
     random_state = 42
@@ -37,5 +39,5 @@ def test_kmeans_matches_sklearn_on_small_dataset():
 
 def test_kmeans_passes_sklearn_checks():
     clusterer = KMeans()
-    for (estimator, check) in estimator_checks_generator(clusterer):
+    for estimator, check in estimator_checks_generator(clusterer):
         check(estimator)

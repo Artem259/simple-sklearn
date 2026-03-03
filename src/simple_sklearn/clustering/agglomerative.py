@@ -6,7 +6,7 @@ from . import tools
 
 
 class AgglomerativeClustering(ClusterMixin, BaseEstimator):
-    def __init__(self, n_clusters=2, linkage='ward'):
+    def __init__(self, n_clusters=2, linkage="ward"):
         super().__init__()
         self.n_clusters = n_clusters
         self.linkage = linkage
@@ -53,12 +53,15 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):
 
         new_index = int(max(labels)) + 1
         new_indices = indices1 + indices2
-        new_lm_array = np.array([
-            self._calc_clusters_distance(i, lm_min_index[0], lm_min_index[1], linkage_matrix, linkage_indices, X)
-            if i != size else np.inf
-            for i in range(size + 1)
-            if i not in lm_min_index
-        ])
+        new_lm_array = np.array(
+            [
+                self._calc_clusters_distance(i, lm_min_index[0], lm_min_index[1], linkage_matrix, linkage_indices, X)
+                if i != size
+                else np.inf
+                for i in range(size + 1)
+                if i not in lm_min_index
+            ]
+        )
         new_linkage_index = [new_index, new_indices]
 
         labels[np.isin(labels, [index1, index2])] = new_index
@@ -75,10 +78,10 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):
 
     def _calc_clusters_distance(self, i, i_merged_1, i_merged_2, linkage_matrix, linkage_indices, X):
         linkage_methods = {
-            'single': _single_clusters_distance,
-            'complete': _complete_clusters_distance,
-            'average': _average_clusters_distance,
-            'ward': _ward_clusters_distance,
+            "single": _single_clusters_distance,
+            "complete": _complete_clusters_distance,
+            "average": _average_clusters_distance,
+            "ward": _ward_clusters_distance,
         }
         return linkage_methods[self.linkage](
             i=i,
@@ -86,16 +89,15 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):
             i_merged_2=i_merged_2,
             linkage_matrix=linkage_matrix,
             linkage_indices=linkage_indices,
-            X=X
+            X=X,
         )
 
     def __validate_params(self):
         if not isinstance(self.n_clusters, int) or self.n_clusters < 1:
             raise ValueError(
-                f"The 'n_clusters' parameter must be an int in the range [1, inf). "
-                f"Got '{self.n_clusters}' instead."
+                f"The 'n_clusters' parameter must be an int in the range [1, inf). Got '{self.n_clusters}' instead."
             )
-        if self.linkage not in ('single', 'complete', 'average', 'ward'):
+        if self.linkage not in ("single", "complete", "average", "ward"):
             raise ValueError(
                 f"The 'linkage' parameter must be a str among "
                 f"['single', 'complete', 'average', 'ward']. Got '{self.linkage}' instead."
@@ -124,6 +126,6 @@ def _ward_clusters_distance(i, i_merged_1, i_merged_2, linkage_matrix, linkage_i
     d0 = linkage_matrix[i_merged_1][i_merged_2]
     d1, d2 = linkage_matrix[i][i_merged_1], linkage_matrix[i][i_merged_2]
 
-    distance_squared = ((n1 + n) * d1 ** 2 + (n2 + n) * d2 ** 2 - n * d0 ** 2) / (n1 + n2 + n)
+    distance_squared = ((n1 + n) * d1**2 + (n2 + n) * d2**2 - n * d0**2) / (n1 + n2 + n)
     distance = np.sqrt(distance_squared)
     return distance

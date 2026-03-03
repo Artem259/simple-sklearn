@@ -5,7 +5,7 @@ from .k_means import KMeans
 
 
 class KMedoids(KMeans):
-    def __init__(self, n_clusters=8, init='random', max_iter=300, random_state=None):
+    def __init__(self, n_clusters=8, init="random", max_iter=300, random_state=None):
         super().__init__(
             n_clusters=n_clusters,
             init=init,
@@ -18,7 +18,7 @@ class KMedoids(KMeans):
         self.distance_matrix_ = tools.calc_distance_matrix(X, X)
 
     def _init_cluster_centers(self, X):
-        if isinstance(self.init, str) and self.init == 'random':
+        if isinstance(self.init, str) and self.init == "random":
             indices = self.random_state_.choice(X.shape[0], self.n_clusters, replace=False)
         else:
             kmeans_cluster_centers = super()._init_cluster_centers(X)

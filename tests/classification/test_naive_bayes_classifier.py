@@ -7,13 +7,15 @@ from simple_sklearn.classification.naive_bayes import NaiveBayesClassifier
 
 
 def test_naive_bayes_matches_sklearn_categorical_nb():
-    X = np.array([
-        [0, 1],
-        [0, 1],
-        [1, 0],
-        [1, 0],
-        [2, 1],
-    ])
+    X = np.array(
+        [
+            [0, 1],
+            [0, 1],
+            [1, 0],
+            [1, 0],
+            [2, 1],
+        ]
+    )
     y = np.array([0, 0, 1, 1, 2])
 
     clf = NaiveBayesClassifier()
@@ -41,13 +43,15 @@ def test_naive_bayes_matches_sklearn_categorical_nb():
 
 
 def test_naive_bayes_handles_unknown_values():
-    X = np.array([
-        [0, 1],
-        [0, 2],
-        [1, 0],
-        [1, 2],
-        [2, 1],
-    ])
+    X = np.array(
+        [
+            [0, 1],
+            [0, 2],
+            [1, 0],
+            [1, 2],
+            [2, 1],
+        ]
+    )
     y = np.array([0, 0, 1, 1, 2])
     min_categories = [5, 5]
 
@@ -55,11 +59,13 @@ def test_naive_bayes_handles_unknown_values():
     clf.fit(X, y)
 
     # Test data includes unseen feature values (e.g. 3 and 4)
-    X_pred = np.array([
-        [3, 1],  # unseen in first feature
-        [0, 4],  # unseen in second feature
-        [1, 0],  # all seen
-    ])
+    X_pred = np.array(
+        [
+            [3, 1],  # unseen in first feature
+            [0, 4],  # unseen in second feature
+            [1, 0],  # all seen
+        ]
+    )
     y_pred = clf.predict(X_pred)
 
     # Check prediction shape and content
@@ -83,5 +89,5 @@ def test_naive_bayes_handles_unknown_values():
 
 def test_naive_bayes_passes_sklearn_checks():
     classifier = NaiveBayesClassifier()
-    for (estimator, check) in estimator_checks_generator(classifier):
+    for estimator, check in estimator_checks_generator(classifier):
         check(estimator)

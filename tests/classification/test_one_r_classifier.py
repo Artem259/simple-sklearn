@@ -5,15 +5,17 @@ from simple_sklearn.classification.one_r import OneRClassifier
 
 
 def test_one_r_basic_rule_and_predict():
-    X = np.array([
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 0],
-        [0, 1],
-    ])
+    X = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 0],
+            [0, 1],
+        ]
+    )
     # y depends on X[:,0] only
-    y = np.array(['class1', 'class1', 'class2', 'class2', 'class1'])
+    y = np.array(["class1", "class1", "class2", "class2", "class1"])
 
     clf = OneRClassifier()
     clf.fit(X, y)
@@ -29,7 +31,7 @@ def test_one_r_basic_rule_and_predict():
     # Predict on a small set
     X_pred = np.array([[0, 2], [1, 3]])
     y_pred = clf.predict(X_pred)
-    assert list(y_pred) == ['class1', 'class2']
+    assert list(y_pred) == ["class1", "class2"]
 
     # predictions are members of training classes
     for p in y_pred:
@@ -37,13 +39,15 @@ def test_one_r_basic_rule_and_predict():
 
 
 def test_one_r_handles_unknown_values():
-    X = np.array([
-        [0, 0],
-        [1, 2],
-        [2, 1],
-        [0, 2],
-    ])
-    y = np.array(['A', 'B', 'C', 'A'])
+    X = np.array(
+        [
+            [0, 0],
+            [1, 2],
+            [2, 1],
+            [0, 2],
+        ]
+    )
+    y = np.array(["A", "B", "C", "A"])
 
     clf = OneRClassifier()
     clf.fit(X, y)
@@ -51,14 +55,16 @@ def test_one_r_handles_unknown_values():
     # Ensure fallback class is set (majority class from training)
     assert hasattr(clf, "fallback_class_")
     assert clf.fallback_class_ in clf.classes_
-    assert clf.fallback_class_ == 'A'
+    assert clf.fallback_class_ == "A"
 
     # Test includes an unseen value "4" in the best feature column
-    X_pred = np.array([
-        [4, 0],
-        [0, 5],
-        [2, 6],
-    ])
+    X_pred = np.array(
+        [
+            [4, 0],
+            [0, 5],
+            [2, 6],
+        ]
+    )
     y_pred = clf.predict(X_pred)
 
     # Verify we got predictions for all rows
@@ -74,5 +80,5 @@ def test_one_r_handles_unknown_values():
 
 def test_one_r_passes_sklearn_checks():
     classifier = OneRClassifier()
-    for (estimator, check) in estimator_checks_generator(classifier):
+    for estimator, check in estimator_checks_generator(classifier):
         check(estimator)

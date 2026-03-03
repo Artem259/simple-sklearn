@@ -28,25 +28,21 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
         self.feature_unknown_log_probs_ = []
         for feature_index, feature_values in enumerate(X.T):
             unique_values = set(np.unique(feature_values))
-            feature_min_categories = (
-                min_categories[feature_index]
-                if min_categories is not None
-                else 1
-            )
+            feature_min_categories = min_categories[feature_index] if min_categories is not None else 1
             unique_num = max(len(unique_values), feature_min_categories)
             self.feature_unique_values_.append(unique_values)
 
-            df = pd.DataFrame({'y': y, 'feat_v': feature_values})
-            df_grouped = df.groupby('y')['feat_v']
+            df = pd.DataFrame({"y": y, "feat_v": feature_values})
+            df_grouped = df.groupby("y")["feat_v"]
             grouped_counts = df_grouped.value_counts()
-            log_probs = grouped_counts.groupby(level=0).apply(
-                lambda x, u=unique_num: np.log((x + 1) / (sum(x) + u))
-            ).reset_index(level=1, drop=True)
+            log_probs = (
+                grouped_counts.groupby(level=0)
+                .apply(lambda x, u=unique_num: np.log((x + 1) / (sum(x) + u)))
+                .reset_index(level=1, drop=True)
+            )
             self.feature_log_prob_.append(log_probs)
 
-            unknown_log_probs = df_grouped.apply(
-                lambda x, u=unique_num: np.log(1 / (len(x) + u))
-            )
+            unknown_log_probs = df_grouped.apply(lambda x, u=unique_num: np.log(1 / (len(x) + u)))
             self.feature_unknown_log_probs_.append(unknown_log_probs)
 
         self.num_features_ = len(self.feature_unique_values_)
@@ -65,18 +61,18 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
 
         decision_scores = []
         for x in X:
-            x_feature_log_probs = feature_probs_concat.groupby(level=[0, 'y']).apply(
+            x_feature_log_probs = feature_probs_concat.groupby(level=[0, "y"]).apply(
                 lambda group, x=x: self._insert_missing_probs(group, x)
             )
-            x_decision_scores = x_feature_log_probs.groupby('y').sum() + self.class_log_prior_
+            x_decision_scores = x_feature_log_probs.groupby("y").sum() + self.class_log_prior_
             decision_scores.append(x_decision_scores)
 
         return np.array(decision_scores)
 
     def _insert_missing_probs(self, group: pd.Series, x):
         feature_index = group.index.get_level_values(0).tolist()[0]
-        y_value = group.index.get_level_values('y').tolist()[0]
-        known_values = group.index.get_level_values('feat_v').tolist()
+        y_value = group.index.get_level_values("y").tolist()[0]
+        known_values = group.index.get_level_values("feat_v").tolist()
 
         feature_value = x[feature_index]
         if feature_value in known_values:
@@ -87,6 +83,4 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
         if self.min_categories is not None:
             min_categories = np.array(self.min_categories)
             if min_categories.shape[0] != X.shape[1]:
-                raise ValueError(
-                    f"min_categories must have shape (n_features,), got {min_categories.shape}"
-                )
+                raise ValueError(f"min_categories must have shape (n_features,), got {min_categories.shape}")

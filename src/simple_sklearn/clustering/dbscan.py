@@ -38,19 +38,13 @@ class DBSCAN(ClusterMixin, BaseEstimator):
     def _init_neighbors(self):
         num_samples = self.distance_matrix_.shape[0]
         return [
-            [
-                j for j in range(num_samples)
-                if i != j and self.distance_matrix_[i, j] <= self.eps
-            ]
+            [j for j in range(num_samples) if i != j and self.distance_matrix_[i, j] <= self.eps]
             for i in range(num_samples)
         ]
 
     def _init_core_sample_indices(self):
         num_samples = self.distance_matrix_.shape[0]
-        return np.array([
-            i for i in range(num_samples)
-            if len(self.neighbors_[i]) >= self.min_samples - 1
-        ])
+        return np.array([i for i in range(num_samples) if len(self.neighbors_[i]) >= self.min_samples - 1])
 
     def _expand_cluster(self, i, cluster_id):
         self.labels_[i] = cluster_id
@@ -74,12 +68,8 @@ class DBSCAN(ClusterMixin, BaseEstimator):
 
     def __validate_params(self):
         if not isinstance(self.eps, numbers.Real) or self.eps <= 0:
-            raise ValueError(
-                f"The 'eps' parameter must be a float in the range (0, inf). "
-                f"Got '{self.eps}' instead."
-            )
+            raise ValueError(f"The 'eps' parameter must be a float in the range (0, inf). Got '{self.eps}' instead.")
         if not isinstance(self.min_samples, int) or self.min_samples < 1:
             raise ValueError(
-                f"The 'min_samples' parameter must be an int in the range [1, inf). "
-                f"Got '{self.min_samples}' instead."
+                f"The 'min_samples' parameter must be an int in the range [1, inf). Got '{self.min_samples}' instead."
             )

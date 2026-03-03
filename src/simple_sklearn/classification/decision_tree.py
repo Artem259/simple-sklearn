@@ -20,7 +20,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):
         self.num_features_ = X.shape[1]
         feat_indices = list(range(self.num_features_))
         df = pd.DataFrame(X, columns=feat_indices)
-        df['y'] = y
+        df["y"] = y
 
         self.feature_unique_values_ = [set(df[feat_index]) for feat_index in feat_indices]
         self.tree_ = self._id3_algorithm(df, set(feat_indices))
@@ -50,7 +50,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):
     def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "DecisionTreeNode":
         node = DecisionTreeNode()
 
-        y_counts = df['y'].value_counts()
+        y_counts = df["y"].value_counts()
         most_frequent_y = y_counts.index[0]
         node.majority_label = most_frequent_y
 
@@ -88,7 +88,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):
         return total_entropy - weighted_entropy
 
     def _calc_entropy(self, df: pd.DataFrame) -> float:
-        value_counts = df['y'].value_counts(normalize=True)
+        value_counts = df["y"].value_counts(normalize=True)
         entropy = -np.sum(value_counts * np.log2(value_counts))
         return entropy
 

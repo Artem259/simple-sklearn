@@ -8,15 +8,18 @@ from simple_sklearn.clustering.agglomerative import AgglomerativeClustering
 
 def _small_dataset():
     rs = np.random.RandomState(0)
-    X = np.vstack([
-        rs.normal(loc=[0,0], scale=0.05, size=(4,2)),
-        rs.normal(loc=[1,1], scale=0.05, size=(4,2)),
-    ])
+    X = np.vstack(
+        [
+            rs.normal(loc=[0, 0], scale=0.05, size=(4, 2)),
+            rs.normal(loc=[1, 1], scale=0.05, size=(4, 2)),
+        ]
+    )
     return X
+
 
 def test_agglomerative_distances_match_sklearn_for_linkages():
     X = _small_dataset()
-    for linkage in ['single', 'complete', 'average', 'ward']:
+    for linkage in ["single", "complete", "average", "ward"]:
         custom = AgglomerativeClustering(n_clusters=2, linkage=linkage)
         custom.fit(X)
 
@@ -32,5 +35,5 @@ def test_agglomerative_distances_match_sklearn_for_linkages():
 
 def test_agglomerative_passes_sklearn_checks():
     clusterer = AgglomerativeClustering()
-    for (estimator, check) in estimator_checks_generator(clusterer):
+    for estimator, check in estimator_checks_generator(clusterer):
         check(estimator)

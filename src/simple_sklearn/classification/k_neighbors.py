@@ -7,7 +7,7 @@ from sklearn.utils.validation import check_is_fitted, validate_data
 
 
 class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
-    def __init__(self, n_neighbors=5, weights='uniform', e=1e-9):
+    def __init__(self, n_neighbors=5, weights="uniform", e=1e-9):
         super().__init__()
         self.n_neighbors = n_neighbors
         self.weights = weights
@@ -51,13 +51,12 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
             x_neigh_indices = self._find_kneighbors_indices(x, self.n_neighbors)
             x_neigh_labels = self.fitted_y_[x_neigh_indices]
             x_neigh_distances, x_neigh_distances_squared = self._calc_distances(
-                x,
-                X_targets=self.fitted_X_[x_neigh_indices]
+                x, X_targets=self.fitted_X_[x_neigh_indices]
             )
-            if self.weights == 'distance':
+            if self.weights == "distance":
                 weights = 1 / (x_neigh_distances + self.e)
                 x_decision_scores = np.bincount(x_neigh_labels, minlength=len(self.classes_), weights=weights)
-            elif self.weights == 'distance_squared':
+            elif self.weights == "distance_squared":
                 weights = 1 / (x_neigh_distances_squared + self.e)
                 x_decision_scores = np.bincount(x_neigh_labels, minlength=len(self.classes_), weights=weights)
             else:  # self.weights == 'uniform'
@@ -96,7 +95,7 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
                 f"The 'n_neighbors' parameter of KNeighborsClassifier must be an int in the range [1, inf). "
                 f"Got '{self.n_neighbors}' instead."
             )
-        if self.weights not in ('distance', 'distance_squared', 'uniform'):
+        if self.weights not in ("distance", "distance_squared", "uniform"):
             raise ValueError(
                 f"The 'weights' parameter of KNeighborsClassifier must be a str among "
                 f"['distance', 'distance_squared', 'uniform']. Got '{self.weights}' instead."

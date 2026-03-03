@@ -8,14 +8,16 @@ from simple_sklearn.clustering.dbscan import DBSCAN
 
 def test_dbscan_matches_sklearn_on_simple_data():
     # two compact clusters + one noise point
-    X = np.array([
-        [0.0, 0.0],
-        [0.1, -0.1],
-        [0.0, 0.2],
-        [5.0, 5.0],
-        [5.1, 4.9],
-        [100.0, 100.0],  # isolated noise
-    ])
+    X = np.array(
+        [
+            [0.0, 0.0],
+            [0.1, -0.1],
+            [0.0, 0.2],
+            [5.0, 5.0],
+            [5.1, 4.9],
+            [100.0, 100.0],  # isolated noise
+        ]
+    )
     eps = 0.5
     min_samples = 2
 
@@ -34,5 +36,5 @@ def test_dbscan_matches_sklearn_on_simple_data():
 
 def test_dbscan_passes_sklearn_checks():
     clusterer = DBSCAN()
-    for (estimator, check) in estimator_checks_generator(clusterer):
+    for estimator, check in estimator_checks_generator(clusterer):
         check(estimator)

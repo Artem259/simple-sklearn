@@ -5,13 +5,15 @@ from simple_sklearn.classification.decision_tree import DecisionTreeClassifier
 
 
 def test_decision_tree_predict_and_tree_structure():
-    X = np.array([
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 1],
-        [1, 1],
-    ])
+    X = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 1],
+            [1, 1],
+        ]
+    )
     y = np.array([0, 0, 1, 1, 1])
 
     clf = DecisionTreeClassifier()
@@ -29,23 +31,27 @@ def test_decision_tree_predict_and_tree_structure():
 
 
 def test_decision_tree_handles_unknown_values():
-    X = np.array([
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 1],
-    ])
+    X = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 1],
+        ]
+    )
     y = np.array([0, 0, 1, 1])
 
     clf = DecisionTreeClassifier()
     clf.fit(X, y)
 
     # Test data includes unseen feature values (e.g. 2)
-    X_pred = np.array([
-        [2, 0],  # unseen in first feature
-        [1, 2],  # unseen in second feature
-        [2, 2],  # unseen in both features
-    ])
+    X_pred = np.array(
+        [
+            [2, 0],  # unseen in first feature
+            [1, 2],  # unseen in second feature
+            [2, 2],  # unseen in both features
+        ]
+    )
     y_pred = clf.predict(X_pred)
 
     # Predictions should have same length as test samples
@@ -58,5 +64,5 @@ def test_decision_tree_handles_unknown_values():
 
 def test_decision_tree_passes_sklearn_checks():
     classifier = DecisionTreeClassifier()
-    for (estimator, check) in estimator_checks_generator(classifier):
+    for estimator, check in estimator_checks_generator(classifier):
         check(estimator)
