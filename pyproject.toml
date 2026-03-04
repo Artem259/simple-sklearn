@@ -30,6 +30,10 @@ dependencies = [
 [project.optional-dependencies]
 lint = [
     "ruff==0.14.9",
+    "mypy==1.19.1",
+    "pandas-stubs>=2.2.3",
+    "scipy-stubs>=1.13.1",
+    # TODO "pre-commit==4.5.0",
 ]
 test = [
     "pytest==8.4.2",
@@ -97,3 +101,15 @@ unfixable = []
     "S101",
     "T201",
 ]
+
+[tool.mypy]
+files = ["src/simple_sklearn/classification/k_neighbors.py"]  # TODO ["src", "tests"]
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "sklearn.*",
+]
+ignore_missing_imports = true

@@ -1,19 +1,21 @@
 import heapq
+from typing import Any
 
 import numpy as np
+from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted, validate_data
 
 
-class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
-    def __init__(self, n_neighbors=5, weights="uniform", e=1e-9):
+class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
+    def __init__(self, n_neighbors: int = 5, weights: str = "uniform", e: float = 1e-9) -> None:
         super().__init__()
         self.n_neighbors = n_neighbors
         self.weights = weights
         self.e = e
 
-    def fit(self, X, y):
+    def fit(self, X: Any, y: Any) -> "KNeighborsClassifier":
         self.__validate_params()
         X, y = validate_data(self, X, y)
         X = np.array(X)
@@ -27,23 +29,23 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
 
         return self
 
-    def predict(self, X):
+    def predict(self, X: Any) -> NDArray[Any]:
         self.__validate_params()
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
         X = np.array(X)
 
         decision_scores = self._decision_function(X)
-        return self.classes_[np.argmax(decision_scores, axis=1)]
+        return np.asarray(self.classes_[np.argmax(decision_scores, axis=1)])
 
-    def kneighbors(self, X):
+    def kneighbors(self, X: Any) -> tuple[NDArray[Any], NDArray[Any]]:
         self.__validate_params()
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
 
         return self._kneighbors(X)
 
-    def _decision_function(self, X):
+    def _decision_function(self, X: NDArray[Any]) -> NDArray[Any]:
         self.__validate_params()
 
         decision_scores = []
@@ -65,7 +67,7 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
 
         return np.array(decision_scores)
 
-    def _kneighbors(self, X):
+    def _kneighbors(self, X: NDArray[Any]) -> tuple[NDArray[Any], NDArray[Any]]:
         neigh_distances = []
         neigh_indices = []
         for x in X:
@@ -76,20 +78,22 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
 
         return np.array(neigh_distances), np.array(neigh_indices)
 
-    def _find_kneighbors_indices(self, x, n_neighbors: int):
+    def _find_kneighbors_indices(self, x: NDArray[Any], n_neighbors: int) -> NDArray[Any]:
         indices = list(range(self.fitted_X_.shape[0]))
         _, distances_squared = self._calc_distances(x)
         neigh_indices = heapq.nsmallest(n_neighbors, indices, key=lambda i: distances_squared[i])
         return np.array(neigh_indices)
 
-    def _calc_distances(self, x_source, X_targets=None):
+    def _calc_distances(
+        self, x_source: NDArray[Any], X_targets: NDArray[Any] | None = None
+    ) -> tuple[NDArray[Any], NDArray[Any]]:
         if X_targets is None:
             X_targets = self.fitted_X_
         distances_squared = np.sum((X_targets - x_source) ** 2, axis=1)
         distances = np.sqrt(distances_squared)
         return distances, distances_squared
 
-    def __validate_params(self):
+    def __validate_params(self) -> None:
         if not isinstance(self.n_neighbors, int) or self.n_neighbors < 1:
             raise ValueError(
                 f"The 'n_neighbors' parameter of KNeighborsClassifier must be an int in the range [1, inf). "
