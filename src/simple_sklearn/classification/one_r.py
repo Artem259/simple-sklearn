@@ -1,15 +1,18 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted, validate_data
 
 
-class OneRClassifier(ClassifierMixin, BaseEstimator):
-    def __init__(self):
+class OneRClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
+    def __init__(self) -> None:
         super().__init__()
 
-    def fit(self, X, y):
+    def fit(self, X: Any, y: Any) -> "OneRClassifier":
         X, y = validate_data(self, X, y)
         X = np.array(X)
 
@@ -36,7 +39,7 @@ class OneRClassifier(ClassifierMixin, BaseEstimator):
 
         return self
 
-    def predict(self, X):
+    def predict(self, X: Any) -> NDArray[Any]:
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
         X = np.array(X)
