@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
@@ -39,8 +39,8 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
             df_grouped = df.groupby("y")["feat_v"]
             grouped_counts = df_grouped.value_counts()
 
-            def _calc_log_probs(x: pd.Series, u: int = unique_num) -> NDArray[Any]:
-                return np.asarray(np.log((x + 1) / (sum(x) + u)))
+            def _calc_log_probs(x: pd.Series, u: int = unique_num) -> pd.Series:
+                return cast(pd.Series, np.log((x + 1) / (x.sum() + u)))
 
             log_probs = grouped_counts.groupby(level=0).apply(_calc_log_probs).reset_index(level=1, drop=True)
             self.feature_log_prob_.append(log_probs)
