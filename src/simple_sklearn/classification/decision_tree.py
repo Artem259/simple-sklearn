@@ -1,15 +1,18 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted, validate_data
 
 
-class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):
-    def __init__(self):
+class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
+    def __init__(self) -> None:
         super().__init__()
 
-    def fit(self, X, y):
+    def fit(self, X: Any, y: Any) -> "DecisionTreeClassifier":
         X, y = validate_data(self, X, y)
         X = np.array(X)
 
@@ -27,7 +30,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):
 
         return self
 
-    def predict(self, X):
+    def predict(self, X: Any) -> NDArray[Any]:
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
         X = np.array(X)
@@ -35,43 +38,39 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):
         y_pred = []
         for x in X:
             curr_node = self.tree_
-            while not curr_node.is_leaf:
-                feat_value = x[curr_node.feat_index]
-                if feat_value in curr_node.children:
-                    curr_node = curr_node.children[feat_value]
-                else:
-                    y_pred.append(curr_node.majority_label)
+            while True:
+                if isinstance(curr_node, LeafNode):
+                    y_pred.append(curr_node.label)
                     break
-            else:
-                y_pred.append(curr_node.label)
+                if isinstance(curr_node, SplitterNode):
+                    feat_value = x[curr_node.feat_index]
+                    if feat_value in curr_node.children:
+                        curr_node = curr_node.children[feat_value]
+                    else:
+                        y_pred.append(curr_node.majority_label)
+                        break
 
         return self.classes_[y_pred]
 
     def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "DecisionTreeNode":
-        node = DecisionTreeNode()
-
         y_counts = df["y"].value_counts()
         most_frequent_y = y_counts.index[0]
-        node.majority_label = most_frequent_y
 
         if len(y_counts) == 1 or not feat_indices:
-            node.make_leaf(most_frequent_y)
-            return node
+            return LeafNode(label=most_frequent_y)
 
         best_feat = max(feat_indices, key=lambda x: self._information_gain(df, x))
-        node.make_splitter(best_feat)
+        node = SplitterNode(feat_index=best_feat, majority_label=most_frequent_y)
 
         for best_feat_value, df_group in df.groupby(by=best_feat):
             child_node = self._id3_algorithm(df_group, feat_indices - {best_feat})
-            node.add_splitter_child(best_feat_value, child_node)
+            node.children[best_feat_value] = child_node
 
         all_best_feat_values = self.feature_unique_values_[best_feat]
         df_best_feat_values = set(df[best_feat])
         unseen_best_feat_values = all_best_feat_values - df_best_feat_values
         for best_feat_value in unseen_best_feat_values:
-            child_node = DecisionTreeNode()
-            child_node.make_leaf(most_frequent_y)
-            node.add_splitter_child(best_feat_value, child_node)
+            node.children[best_feat_value] = LeafNode(label=most_frequent_y)
 
         return node
 
@@ -89,36 +88,21 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):
 
     def _calc_entropy(self, df: pd.DataFrame) -> float:
         value_counts = df["y"].value_counts(normalize=True)
-        entropy = -np.sum(value_counts * np.log2(value_counts))
+        entropy = float(-np.sum(value_counts * np.log2(value_counts)))
         return entropy
 
 
 class DecisionTreeNode:
-    def __init__(self):
-        self.is_leaf = None
+    pass
 
-        # For splitter node
-        self.feat_index = None
-        self.children = None
 
-        # For leaf node
-        self.label = None
+class SplitterNode(DecisionTreeNode):
+    def __init__(self, feat_index: int, majority_label: int) -> None:
+        self.feat_index: int = feat_index
+        self.majority_label: int = majority_label
+        self.children: dict[Any, DecisionTreeNode] = {}
 
-        # For unknown-value fallback
-        self.majority_label = None
 
-    def make_splitter(self, feat_index: int):
-        self.is_leaf = False
-        self.feat_index = feat_index
-        self.children = {}
-        self.label = None
-
-    def make_leaf(self, label: int):
-        self.is_leaf = True
-        self.feat_index = None
-        self.children = None
-        self.label = label
-        self.majority_label = label
-
-    def add_splitter_child(self, feat_value, child_node: "DecisionTreeNode"):
-        self.children[feat_value] = child_node
+class LeafNode(DecisionTreeNode):
+    def __init__(self, label: int) -> None:
+        self.label: int = label
