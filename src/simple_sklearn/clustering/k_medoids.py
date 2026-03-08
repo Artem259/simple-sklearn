@@ -1,11 +1,20 @@
+from typing import Any
+
 import numpy as np
+from numpy.typing import NDArray
 
 from . import tools
 from .k_means import KMeans
 
 
 class KMedoids(KMeans):
-    def __init__(self, n_clusters=8, init="random", max_iter=300, random_state=None):
+    def __init__(
+        self,
+        n_clusters: int = 8,
+        init: str | NDArray[Any] | list[Any] = "random",
+        max_iter: int = 300,
+        random_state: int | np.random.RandomState | None = None,
+    ) -> None:
         super().__init__(
             n_clusters=n_clusters,
             init=init,
@@ -14,10 +23,10 @@ class KMedoids(KMeans):
             random_state=random_state,
         )
 
-    def _init_fit(self, X):
+    def _init_fit(self, X: NDArray[Any]) -> None:
         self.distance_matrix_ = tools.calc_distance_matrix(X, X)
 
-    def _init_cluster_centers(self, X):
+    def _init_cluster_centers(self, X: NDArray[Any]) -> NDArray[Any]:
         if isinstance(self.init, str) and self.init == "random":
             indices = self.random_state_.choice(X.shape[0], self.n_clusters, replace=False)
         else:
@@ -25,9 +34,9 @@ class KMedoids(KMeans):
             indices = _convert_kmeans_cluster_centers(X, kmeans_cluster_centers)
 
         self.cluster_center_indices_ = indices
-        return X[indices]
+        return np.asarray(X[indices])
 
-    def _recalc_cluster_centers(self, X):
+    def _recalc_cluster_centers(self, X: NDArray[Any]) -> NDArray[Any]:
         new_indices = []
         new_centers = []
 
@@ -50,20 +59,20 @@ class KMedoids(KMeans):
         self.cluster_center_indices_ = np.array(new_indices)
         return np.array(new_centers)
 
-    def _recalc_labels(self, X):
+    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[Any]:
         distances_to_medoids = self.distance_matrix_[:, self.cluster_center_indices_]
-        return np.argmin(distances_to_medoids, axis=1)
+        return np.asarray(np.argmin(distances_to_medoids, axis=1))
 
-    def _check_convergence(self, old_cluster_centers):
+    def _check_convergence(self, old_cluster_centers: NDArray[Any]) -> bool:
         return np.array_equal(self.cluster_centers_, old_cluster_centers)
 
-    def _calc_inertia(self, X):
+    def _calc_inertia(self, X: NDArray[Any]) -> float:
         distances_to_medoids = self.distance_matrix_[:, self.cluster_center_indices_]
         min_distances = np.min(distances_to_medoids, axis=1)
         return float(np.sum(min_distances))
 
 
-def _convert_kmeans_cluster_centers(X, kmeans_cluster_centers):
+def _convert_kmeans_cluster_centers(X: NDArray[Any], kmeans_cluster_centers: NDArray[Any]) -> NDArray[Any]:
     indices_with_centers = [tools.find_closest_point(X, center) for center in kmeans_cluster_centers]
     indices, _ = zip(*indices_with_centers, strict=True)
     return np.array(indices)
