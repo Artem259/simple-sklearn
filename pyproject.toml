@@ -103,7 +103,7 @@ unfixable = []
 ]
 
 [tool.mypy]
-files = ["src/simple_sklearn/classification"]  # TODO ["src", "tests"]
+files = ["src"]  # TODO ["src", "tests"]
 strict = true
 warn_return_any = true
 warn_unused_configs = true
