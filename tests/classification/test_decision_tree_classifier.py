@@ -4,7 +4,7 @@ from sklearn.utils.estimator_checks import estimator_checks_generator
 from simple_sklearn.classification.decision_tree import DecisionTreeClassifier
 
 
-def test_decision_tree_predict_and_tree_structure():
+def test_decision_tree_predict_and_tree_structure() -> None:
     X = np.array(
         [
             [0, 0],
@@ -30,7 +30,7 @@ def test_decision_tree_predict_and_tree_structure():
     assert clf.tree_ is not None
 
 
-def test_decision_tree_handles_unknown_values():
+def test_decision_tree_handles_unknown_values() -> None:
     X = np.array(
         [
             [0, 0],
@@ -62,7 +62,7 @@ def test_decision_tree_handles_unknown_values():
         assert p in np.unique(y)
 
 
-def test_decision_tree_passes_sklearn_checks():
+def test_decision_tree_passes_sklearn_checks() -> None:
     classifier = DecisionTreeClassifier()
     for estimator, check in estimator_checks_generator(classifier):
         check(estimator)

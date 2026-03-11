@@ -6,7 +6,7 @@ from sklearn.utils.estimator_checks import estimator_checks_generator
 from simple_sklearn.clustering.dbscan import DBSCAN
 
 
-def test_dbscan_matches_sklearn_on_simple_data():
+def test_dbscan_matches_sklearn_on_simple_data() -> None:
     # two compact clusters + one noise point
     X = np.array(
         [
@@ -34,7 +34,7 @@ def test_dbscan_matches_sklearn_on_simple_data():
     assert isinstance(custom.core_sample_indices_, (list, np.ndarray))
 
 
-def test_dbscan_passes_sklearn_checks():
+def test_dbscan_passes_sklearn_checks() -> None:
     clusterer = DBSCAN()
     for estimator, check in estimator_checks_generator(clusterer):
         check(estimator)

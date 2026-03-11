@@ -4,7 +4,7 @@ from sklearn.utils.estimator_checks import estimator_checks_generator
 from simple_sklearn.clustering.k_medoids import KMedoids
 
 
-def test_kmedoids_basic_properties():
+def test_kmedoids_basic_properties() -> None:
     # small dataset with two clusters
     rng = np.random.RandomState(0)
     X = np.vstack(
@@ -29,7 +29,7 @@ def test_kmedoids_basic_properties():
     assert km.cluster_centers_.shape == (n_clusters, X.shape[1])
 
 
-def test_kmedoids_passes_sklearn_checks():
+def test_kmedoids_passes_sklearn_checks() -> None:
     clusterer = KMedoids()
     for estimator, check in estimator_checks_generator(clusterer):
         check(estimator)

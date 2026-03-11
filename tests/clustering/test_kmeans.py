@@ -7,7 +7,7 @@ from sklearn.utils.estimator_checks import estimator_checks_generator
 from simple_sklearn.clustering.k_means import KMeans
 
 
-def test_kmeans_matches_sklearn_on_small_dataset():
+def test_kmeans_matches_sklearn_on_small_dataset() -> None:
     # three well-separated clusters
     X = np.vstack(
         [
@@ -37,7 +37,7 @@ def test_kmeans_matches_sklearn_on_small_dataset():
     assert hasattr(custom, "n_iter_")
 
 
-def test_kmeans_passes_sklearn_checks():
+def test_kmeans_passes_sklearn_checks() -> None:
     clusterer = KMeans()
     for estimator, check in estimator_checks_generator(clusterer):
         check(estimator)

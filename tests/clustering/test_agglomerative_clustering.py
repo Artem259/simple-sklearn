@@ -1,12 +1,15 @@
+from typing import Any
+
 import numpy as np
 import numpy.testing as npt
 import sklearn
+from numpy.typing import NDArray
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
 from simple_sklearn.clustering.agglomerative import AgglomerativeClustering
 
 
-def _small_dataset():
+def _small_dataset() -> NDArray[Any]:
     rs = np.random.RandomState(0)
     X = np.vstack(
         [
@@ -17,7 +20,7 @@ def _small_dataset():
     return X
 
 
-def test_agglomerative_distances_match_sklearn_for_linkages():
+def test_agglomerative_distances_match_sklearn_for_linkages() -> None:
     X = _small_dataset()
     for linkage in ["single", "complete", "average", "ward"]:
         custom = AgglomerativeClustering(n_clusters=2, linkage=linkage)
@@ -33,7 +36,7 @@ def test_agglomerative_distances_match_sklearn_for_linkages():
         assert custom.children_.shape[1] == 2
 
 
-def test_agglomerative_passes_sklearn_checks():
+def test_agglomerative_passes_sklearn_checks() -> None:
     clusterer = AgglomerativeClustering()
     for estimator, check in estimator_checks_generator(clusterer):
         check(estimator)

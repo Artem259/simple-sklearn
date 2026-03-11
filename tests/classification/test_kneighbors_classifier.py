@@ -6,7 +6,7 @@ from sklearn.utils.estimator_checks import estimator_checks_generator
 from simple_sklearn.classification.k_neighbors import KNeighborsClassifier
 
 
-def test_kneighbors_predict_and_kneighbors_match_sklearn():
+def test_kneighbors_predict_and_kneighbors_match_sklearn() -> None:
     X = np.array(
         [
             [0, 0],
@@ -40,7 +40,7 @@ def test_kneighbors_predict_and_kneighbors_match_sklearn():
     assert (ind == sk_ind).all()
 
 
-def test_kneighbors_passes_sklearn_checks():
+def test_kneighbors_passes_sklearn_checks() -> None:
     classifier = KNeighborsClassifier()
     for estimator, check in estimator_checks_generator(classifier):
         check(estimator)

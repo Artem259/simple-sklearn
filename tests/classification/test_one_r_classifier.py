@@ -4,7 +4,7 @@ from sklearn.utils.estimator_checks import estimator_checks_generator
 from simple_sklearn.classification.one_r import OneRClassifier
 
 
-def test_one_r_basic_rule_and_predict():
+def test_one_r_basic_rule_and_predict() -> None:
     X = np.array(
         [
             [0, 0],
@@ -38,7 +38,7 @@ def test_one_r_basic_rule_and_predict():
         assert p in clf.classes_
 
 
-def test_one_r_handles_unknown_values():
+def test_one_r_handles_unknown_values() -> None:
     X = np.array(
         [
             [0, 0],
@@ -78,7 +78,7 @@ def test_one_r_handles_unknown_values():
     assert y_pred[0] == clf.fallback_class_
 
 
-def test_one_r_passes_sklearn_checks():
+def test_one_r_passes_sklearn_checks() -> None:
     classifier = OneRClassifier()
     for estimator, check in estimator_checks_generator(classifier):
         check(estimator)
