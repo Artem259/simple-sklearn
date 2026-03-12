@@ -50,7 +50,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
                         y_pred.append(curr_node.majority_label)
                         break
 
-        return self.classes_[y_pred]
+        return np.asarray(self.classes_[y_pred])
 
     def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "DecisionTreeNode":
         y_counts = df["y"].value_counts()
