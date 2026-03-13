@@ -109,6 +109,10 @@ fixable = ["ALL"]
 unfixable = []
 
 [tool.ruff.lint.per-file-ignores]
+"notebooks/**/*.{py,ipynb}" = [
+    "S101",
+    "T201",
+]
 "tests/**/*.py" = [
     "S101",
     "T201",
