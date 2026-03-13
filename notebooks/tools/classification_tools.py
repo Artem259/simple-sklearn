@@ -1,3 +1,6 @@
+from collections.abc import Iterable
+from typing import Any
+
 import sklearn
 
 from simple_sklearn.classification.decision_tree import DecisionTreeClassifier, DecisionTreeNode, LeafNode, SplitterNode
@@ -6,13 +9,13 @@ from simple_sklearn.classification.naive_bayes import NaiveBayesClassifier
 from simple_sklearn.classification.one_r import OneRClassifier
 
 
-def one_r_classifier_info(clf: OneRClassifier):
+def one_r_classifier_info(clf: OneRClassifier) -> None:
     for rule in clf.prediction_rules_.items():
         print(f"x[{clf.best_feature_index_}] == {rule[0]}: y = {clf.classes_[rule[1]]}")
 
 
-def naive_bayes_classifier_info(clf: NaiveBayesClassifier):
-    info = {
+def naive_bayes_classifier_info(clf: NaiveBayesClassifier) -> None:
+    info: dict[str, Iterable[Any]] = {
         "class_log_prior_": clf.class_log_prior_,
         "feature_log_prob_": clf.feature_log_prob_,
         "feature_unknown_log_probs_": clf.feature_unknown_log_probs_,
@@ -22,8 +25,8 @@ def naive_bayes_classifier_info(clf: NaiveBayesClassifier):
         print(*value, "\n")
 
 
-def sklearn_categorical_nb_info(clf: sklearn.naive_bayes.CategoricalNB):
-    info = {
+def sklearn_categorical_nb_info(clf: sklearn.naive_bayes.CategoricalNB) -> None:
+    info: dict[str, Iterable[Any]] = {
         "class_log_prior_": clf.class_log_prior_,
         "feature_log_prob_": clf.feature_log_prob_,
     }
@@ -32,8 +35,8 @@ def sklearn_categorical_nb_info(clf: sklearn.naive_bayes.CategoricalNB):
         print(*value, "\n")
 
 
-def decision_tree_classifier_info(clf: DecisionTreeClassifier):
-    def display_tree(node: DecisionTreeNode, prefix="", is_last=True, is_root=False):
+def decision_tree_classifier_info(clf: DecisionTreeClassifier) -> None:
+    def display_tree(node: DecisionTreeNode, prefix: str = "", is_last: bool = True, is_root: bool = False) -> None:
         connector = ""
         new_prefix = ""
 
@@ -55,20 +58,11 @@ def decision_tree_classifier_info(clf: DecisionTreeClassifier):
     display_tree(clf.tree_)
 
 
-def k_neighbors_classifier_info(clf: KNeighborsClassifier, X_pred):
+def k_neighbors_classifier_info(
+    clf: KNeighborsClassifier | sklearn.neighbors.KNeighborsClassifier, X_pred: Any
+) -> None:
     neigh_dist, neigh_ind = clf.kneighbors(X_pred)
-    info = {
-        "neighbors_dist": neigh_dist,
-        "neighbors_indices": neigh_ind,
-    }
-    for key, value in info.items():
-        print(f"{key}:")
-        print(*value, "\n")
-
-
-def sklearn_k_neighbors_classifier_info(clf: sklearn.neighbors.KNeighborsClassifier, X_pred):
-    neigh_dist, neigh_ind = clf.kneighbors(X_pred)
-    info = {
+    info: dict[str, Iterable[Any]] = {
         "neighbors_dist": neigh_dist,
         "neighbors_indices": neigh_ind,
     }
