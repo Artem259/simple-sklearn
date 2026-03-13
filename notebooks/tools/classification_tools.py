@@ -48,7 +48,7 @@ def decision_tree_classifier_info(clf: DecisionTreeClassifier):
 
             children_items = list(node.children.items())
             for i, (feat_value, child) in enumerate(children_items):
-                is_last_child = (i == len(children_items) - 1)
+                is_last_child = i == len(children_items) - 1
                 print(new_prefix + f"({feat_value})")
                 display_tree(child, prefix=new_prefix, is_last=is_last_child)
 
