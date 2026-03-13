@@ -8,6 +8,14 @@ repos:
       - id: check-toml
       - id: check-added-large-files
 
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.9.1
+    hooks:
+      - id: nbstripout
+        args:
+          - --extra-keys
+          - "metadata.language_info.version metadata.kernelspec.name metadata.kernelspec.display_name"
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.9
     hooks:
