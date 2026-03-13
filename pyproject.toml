@@ -29,20 +29,25 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-lint = [
-    "ruff==0.14.9",
-    "mypy==1.19.1",
-    "pandas-stubs>=2.2.3",
-    "scipy-stubs>=1.13.1",
-    # TODO "pre-commit==4.5.0",
-]
-test = [
-    "pytest==8.4.2",
-]
 jupyter = [
     "notebook>=7.3.2",
-    "matplotlib==3.9.4",
-    "seaborn==0.13.2",
+    "matplotlib>=3.9.4",
+    "seaborn>=0.13.2",
+]
+quality = [
+    "mypy>=1.19.1",
+    "pandas-stubs>=2.2.3",
+    "scipy-stubs>=1.13.1",
+    "pre-commit>=4.0.0",
+]
+test = [
+    "pytest>=8.4.2",
+    "pytest-cov>=6.0.0",
+]
+dev = [
+    "ruff==0.14.9",
+    "build==1.4.0",
+    "twine==6.2.0",
 ]
 
 [project.urls]
@@ -56,8 +61,14 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
-addopts = "-ra -q"
+addopts = "-ra -q --cov=simple_sklearn --cov-branch --cov-report=term-missing"
+
+[tool.coverage.paths]
+source = [
+    "src/simple_sklearn",
+    "*/site-packages/simple_sklearn",
+    "*\\site-packages\\simple_sklearn"
+]
 
 [tool.ruff]
 src = ["src"]

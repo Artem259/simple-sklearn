@@ -12,3 +12,6 @@
 /build/
 /dist/
 **/*.egg-info
+
+# Exclude testing artifacts
+.coverage
