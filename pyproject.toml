@@ -72,9 +72,6 @@ source = [
 
 [tool.ruff]
 src = ["src"]
-exclude = [
-    "notebooks",
-]
 line-length = 120
 target-version = "py310"
 
