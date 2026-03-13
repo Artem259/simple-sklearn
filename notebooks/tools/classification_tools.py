@@ -1,9 +1,9 @@
 import sklearn
 
-from src.simple_sklearn.classification.one_r import OneRClassifier
-from src.simple_sklearn.classification.naive_bayes import NaiveBayesClassifier
-from src.simple_sklearn.classification.decision_tree import DecisionTreeClassifier, DecisionTreeNode
-from src.simple_sklearn.classification.k_neighbors import KNeighborsClassifier
+from simple_sklearn.classification.one_r import OneRClassifier
+from simple_sklearn.classification.naive_bayes import NaiveBayesClassifier
+from simple_sklearn.classification.decision_tree import DecisionTreeClassifier, DecisionTreeNode, SplitterNode, LeafNode
+from simple_sklearn.classification.k_neighbors import KNeighborsClassifier
 
 
 def OneRClassifier_info(clf: OneRClassifier):
@@ -41,9 +41,9 @@ def DecisionTreeClassifier_info(clf: DecisionTreeClassifier):
             connector = "└── " if is_last else "├── "
             new_prefix = prefix + ("    " if is_last else "│   ")
 
-        if node.is_leaf:
+        if isinstance(node, LeafNode):
             print(prefix + connector + f"Label: {node.label}")
-        else:
+        if isinstance(node, SplitterNode):
             print(prefix + connector + f"Feature[{node.feat_index + 1}]")
 
             children_items = list(node.children.items())
