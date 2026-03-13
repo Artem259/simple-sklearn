@@ -6,12 +6,12 @@ from simple_sklearn.classification.naive_bayes import NaiveBayesClassifier
 from simple_sklearn.classification.one_r import OneRClassifier
 
 
-def OneRClassifier_info(clf: OneRClassifier):
+def one_r_classifier_info(clf: OneRClassifier):
     for rule in clf.prediction_rules_.items():
         print(f"x[{clf.best_feature_index_}] == {rule[0]}: y = {clf.classes_[rule[1]]}")
 
 
-def NaiveBayesClassifier_info(clf: NaiveBayesClassifier):
+def naive_bayes_classifier_info(clf: NaiveBayesClassifier):
     info = {
         "class_log_prior_": clf.class_log_prior_,
         "feature_log_prob_": clf.feature_log_prob_,
@@ -22,7 +22,7 @@ def NaiveBayesClassifier_info(clf: NaiveBayesClassifier):
         print(*value, "\n")
 
 
-def sklearn_CategoricalNB_info(clf: sklearn.naive_bayes.CategoricalNB):
+def sklearn_categorical_nb_info(clf: sklearn.naive_bayes.CategoricalNB):
     info = {
         "class_log_prior_": clf.class_log_prior_,
         "feature_log_prob_": clf.feature_log_prob_,
@@ -32,7 +32,7 @@ def sklearn_CategoricalNB_info(clf: sklearn.naive_bayes.CategoricalNB):
         print(*value, "\n")
 
 
-def DecisionTreeClassifier_info(clf: DecisionTreeClassifier):
+def decision_tree_classifier_info(clf: DecisionTreeClassifier):
     def display_tree(node: DecisionTreeNode, prefix="", is_last=True, is_root=False):
         connector = ""
         new_prefix = ""
@@ -55,7 +55,7 @@ def DecisionTreeClassifier_info(clf: DecisionTreeClassifier):
     display_tree(clf.tree_)
 
 
-def KNeighborsClassifier_info(clf: KNeighborsClassifier, X_pred):
+def k_neighbors_classifier_info(clf: KNeighborsClassifier, X_pred):
     neigh_dist, neigh_ind = clf.kneighbors(X_pred)
     info = {
         "neighbors_dist": neigh_dist,
@@ -66,7 +66,7 @@ def KNeighborsClassifier_info(clf: KNeighborsClassifier, X_pred):
         print(*value, "\n")
 
 
-def sklearn_KNeighborsClassifier_info(clf: sklearn.neighbors.KNeighborsClassifier, X_pred):
+def sklearn_k_neighbors_classifier_info(clf: sklearn.neighbors.KNeighborsClassifier, X_pred):
     neigh_dist, neigh_ind = clf.kneighbors(X_pred)
     info = {
         "neighbors_dist": neigh_dist,

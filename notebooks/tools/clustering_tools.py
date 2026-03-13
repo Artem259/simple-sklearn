@@ -120,12 +120,12 @@ def generate_toy_datasets(n_samples, random_state_1=30, random_state_2=170):
 
 
 def plot_toy_datasets(datasets, clusterers, figsize, axis_lim=2.5):
-    fig, axes = plt.subplots(len(datasets), len(clusterers), figsize=figsize)
+    _fig, axes = plt.subplots(len(datasets), len(clusterers), figsize=figsize)
     plt.subplots_adjust(
         left=0.02, right=0.98, bottom=0.001, top=0.98, wspace=0.01, hspace=0.01
     )
 
-    for row, (dataset_str, X) in enumerate(datasets):
+    for row, (_dataset_str, X) in enumerate(datasets):
         for col, (clusterer_str, clusterer) in enumerate(clusterers):
             ax = axes[row, col]
 
@@ -144,7 +144,7 @@ def plot_toy_datasets(datasets, clusterers, figsize, axis_lim=2.5):
             plt.xticks(())
             plt.yticks(())
             ax.text(
-                0.99, 0.01, ("%.2fs" % fit_time).lstrip("0"),
+                0.99, 0.01, f"{fit_time:.2f}s".lstrip("0"),
                 transform=ax.transAxes, size=10, horizontalalignment="right",
             )
 
