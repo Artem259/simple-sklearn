@@ -1,9 +1,10 @@
 import time
+
 import numpy as np
 import scipy
 import sklearn
 from matplotlib import pyplot as plt
-from sklearn.datasets import make_circles, make_moons, make_blobs
+from sklearn.datasets import make_blobs, make_circles, make_moons
 
 
 def plot_raw_data(X, labels):
