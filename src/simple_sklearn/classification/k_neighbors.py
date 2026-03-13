@@ -1,18 +1,21 @@
-import numpy as np
 import heapq
+from typing import Any
+
+import numpy as np
+from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
-from sklearn.utils.validation import validate_data, check_is_fitted
+from sklearn.utils.validation import check_is_fitted, validate_data
 
 
-class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
-    def __init__(self, n_neighbors=5, weights='uniform', e=1e-9):
+class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
+    def __init__(self, n_neighbors: int = 5, weights: str = "uniform", e: float = 1e-9) -> None:
         super().__init__()
         self.n_neighbors = n_neighbors
         self.weights = weights
         self.e = e
 
-    def fit(self, X, y):
+    def fit(self, X: Any, y: Any) -> "KNeighborsClassifier":
         self.__validate_params()
         X, y = validate_data(self, X, y)
         X = np.array(X)
@@ -26,23 +29,23 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
 
         return self
 
-    def predict(self, X):
+    def predict(self, X: Any) -> NDArray[Any]:
         self.__validate_params()
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
         X = np.array(X)
 
         decision_scores = self._decision_function(X)
-        return self.classes_[np.argmax(decision_scores, axis=1)]
+        return np.asarray(self.classes_[np.argmax(decision_scores, axis=1)])
 
-    def kneighbors(self, X):
+    def kneighbors(self, X: Any) -> tuple[NDArray[Any], NDArray[Any]]:
         self.__validate_params()
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
 
         return self._kneighbors(X)
 
-    def _decision_function(self, X):
+    def _decision_function(self, X: NDArray[Any]) -> NDArray[Any]:
         self.__validate_params()
 
         decision_scores = []
@@ -50,13 +53,12 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
             x_neigh_indices = self._find_kneighbors_indices(x, self.n_neighbors)
             x_neigh_labels = self.fitted_y_[x_neigh_indices]
             x_neigh_distances, x_neigh_distances_squared = self._calc_distances(
-                x,
-                X_targets=self.fitted_X_[x_neigh_indices]
+                x, X_targets=self.fitted_X_[x_neigh_indices]
             )
-            if self.weights == 'distance':
+            if self.weights == "distance":
                 weights = 1 / (x_neigh_distances + self.e)
                 x_decision_scores = np.bincount(x_neigh_labels, minlength=len(self.classes_), weights=weights)
-            elif self.weights == 'distance_squared':
+            elif self.weights == "distance_squared":
                 weights = 1 / (x_neigh_distances_squared + self.e)
                 x_decision_scores = np.bincount(x_neigh_labels, minlength=len(self.classes_), weights=weights)
             else:  # self.weights == 'uniform'
@@ -65,7 +67,7 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
 
         return np.array(decision_scores)
 
-    def _kneighbors(self, X):
+    def _kneighbors(self, X: NDArray[Any]) -> tuple[NDArray[Any], NDArray[Any]]:
         neigh_distances = []
         neigh_indices = []
         for x in X:
@@ -76,26 +78,28 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):
 
         return np.array(neigh_distances), np.array(neigh_indices)
 
-    def _find_kneighbors_indices(self, x, n_neighbors: int):
+    def _find_kneighbors_indices(self, x: NDArray[Any], n_neighbors: int) -> NDArray[Any]:
         indices = list(range(self.fitted_X_.shape[0]))
         _, distances_squared = self._calc_distances(x)
         neigh_indices = heapq.nsmallest(n_neighbors, indices, key=lambda i: distances_squared[i])
         return np.array(neigh_indices)
 
-    def _calc_distances(self, x_source, X_targets=None):
+    def _calc_distances(
+        self, x_source: NDArray[Any], X_targets: NDArray[Any] | None = None
+    ) -> tuple[NDArray[Any], NDArray[Any]]:
         if X_targets is None:
             X_targets = self.fitted_X_
         distances_squared = np.sum((X_targets - x_source) ** 2, axis=1)
         distances = np.sqrt(distances_squared)
         return distances, distances_squared
 
-    def __validate_params(self):
+    def __validate_params(self) -> None:
         if not isinstance(self.n_neighbors, int) or self.n_neighbors < 1:
             raise ValueError(
                 f"The 'n_neighbors' parameter of KNeighborsClassifier must be an int in the range [1, inf). "
                 f"Got '{self.n_neighbors}' instead."
             )
-        if self.weights not in ('distance', 'distance_squared', 'uniform'):
+        if self.weights not in ("distance", "distance_squared", "uniform"):
             raise ValueError(
                 f"The 'weights' parameter of KNeighborsClassifier must be a str among "
                 f"['distance', 'distance_squared', 'uniform']. Got '{self.weights}' instead."

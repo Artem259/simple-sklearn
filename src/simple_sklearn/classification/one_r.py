@@ -1,15 +1,18 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
-from sklearn.utils.validation import validate_data, check_is_fitted
+from sklearn.utils.validation import check_is_fitted, validate_data
 
 
-class OneRClassifier(ClassifierMixin, BaseEstimator):
-    def __init__(self):
+class OneRClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
+    def __init__(self) -> None:
         super().__init__()
 
-    def fit(self, X, y):
+    def fit(self, X: Any, y: Any) -> "OneRClassifier":
         X, y = validate_data(self, X, y)
         X = np.array(X)
 
@@ -20,9 +23,9 @@ class OneRClassifier(ClassifierMixin, BaseEstimator):
         num_samples = X.shape[0]
         best_error_rate = 1.01
         for feature_index, feature_values in enumerate(X.T):
-            df = pd.DataFrame({'feat_v': feature_values, 'y': y})
+            df = pd.DataFrame({"feat_v": feature_values, "y": y})
 
-            df_grouped = df.groupby('feat_v')['y']
+            df_grouped = df.groupby("feat_v")["y"]
             prediction_rules = df_grouped.apply(lambda x: x.value_counts().idxmax())
             accuracy = float(df_grouped.apply(lambda x: x.value_counts().max()).sum()) / num_samples
             error_rate = 1 - accuracy
@@ -36,7 +39,7 @@ class OneRClassifier(ClassifierMixin, BaseEstimator):
 
         return self
 
-    def predict(self, X):
+    def predict(self, X: Any) -> NDArray[Any]:
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
         X = np.array(X)

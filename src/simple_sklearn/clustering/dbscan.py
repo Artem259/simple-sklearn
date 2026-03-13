@@ -1,18 +1,22 @@
-import numpy as np
+import numbers
 from collections import deque
+from typing import Any
+
+import numpy as np
+from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import validate_data
 
 from . import tools
 
 
-class DBSCAN(ClusterMixin, BaseEstimator):
-    def __init__(self, eps=0.5, min_samples=5):
+class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
+    def __init__(self, eps: float = 0.5, min_samples: int = 5) -> None:
         super().__init__()
         self.eps = eps
         self.min_samples = min_samples
 
-    def fit(self, X, y=None):
+    def fit(self, X: Any, y: Any = None) -> "DBSCAN":
         self.__validate_params()
         X = validate_data(self, X)
         X = np.array(X)
@@ -33,24 +37,18 @@ class DBSCAN(ClusterMixin, BaseEstimator):
 
         return self
 
-    def _init_neighbors(self):
+    def _init_neighbors(self) -> list[list[int]]:
         num_samples = self.distance_matrix_.shape[0]
         return [
-            [
-                j for j in range(num_samples)
-                if i != j and self.distance_matrix_[i, j] <= self.eps
-            ]
+            [j for j in range(num_samples) if i != j and self.distance_matrix_[i, j] <= self.eps]
             for i in range(num_samples)
         ]
 
-    def _init_core_sample_indices(self):
+    def _init_core_sample_indices(self) -> NDArray[Any]:
         num_samples = self.distance_matrix_.shape[0]
-        return np.array([
-            i for i in range(num_samples)
-            if len(self.neighbors_[i]) >= self.min_samples - 1
-        ])
+        return np.array([i for i in range(num_samples) if len(self.neighbors_[i]) >= self.min_samples - 1])
 
-    def _expand_cluster(self, i, cluster_id):
+    def _expand_cluster(self, i: int, cluster_id: int) -> None:
         self.labels_[i] = cluster_id
 
         i_neighbors = self.neighbors_[i]
@@ -63,21 +61,17 @@ class DBSCAN(ClusterMixin, BaseEstimator):
             if self._is_core_sample(j):
                 queue.extend(self.neighbors_[j])
 
-    def _is_visited_sample(self, index):
-        return self.labels_[index] != -1
+    def _is_visited_sample(self, index: int) -> bool:
+        return bool(self.labels_[index] != -1)
 
-    def _is_core_sample(self, index):
+    def _is_core_sample(self, index: int) -> bool:
         neighbors = self.neighbors_[index]
         return len(neighbors) >= self.min_samples - 1
 
-    def __validate_params(self):
-        if not (isinstance(self.eps, float) or isinstance(self.eps, int)) or self.eps <= 0:
-            raise ValueError(
-                f"The 'eps' parameter must be a float in the range (0, inf). "
-                f"Got '{self.eps}' instead."
-            )
+    def __validate_params(self) -> None:
+        if not isinstance(self.eps, numbers.Real) or self.eps <= 0:
+            raise ValueError(f"The 'eps' parameter must be a float in the range (0, inf). Got '{self.eps}' instead.")
         if not isinstance(self.min_samples, int) or self.min_samples < 1:
             raise ValueError(
-                f"The 'min_samples' parameter must be an int in the range [1, inf). "
-                f"Got '{self.min_samples}' instead."
+                f"The 'min_samples' parameter must be an int in the range [1, inf). Got '{self.min_samples}' instead."
             )

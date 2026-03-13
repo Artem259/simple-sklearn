@@ -1,16 +1,19 @@
 import numpy as np
-from src.simple_sklearn.classification.DecisionTreeClassifier import DecisionTreeClassifier
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
+from simple_sklearn.classification.decision_tree import DecisionTreeClassifier
 
-def test_decision_tree_predict_and_tree_structure():
-    X = np.array([
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 1],
-        [1, 1],
-    ])
+
+def test_decision_tree_predict_and_tree_structure() -> None:
+    X = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 1],
+            [1, 1],
+        ]
+    )
     y = np.array([0, 0, 1, 1, 1])
 
     clf = DecisionTreeClassifier()
@@ -27,24 +30,28 @@ def test_decision_tree_predict_and_tree_structure():
     assert clf.tree_ is not None
 
 
-def test_decision_tree_handles_unknown_values():
-    X = np.array([
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 1],
-    ])
+def test_decision_tree_handles_unknown_values() -> None:
+    X = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 1],
+        ]
+    )
     y = np.array([0, 0, 1, 1])
 
     clf = DecisionTreeClassifier()
     clf.fit(X, y)
 
     # Test data includes unseen feature values (e.g. 2)
-    X_pred = np.array([
-        [2, 0],  # unseen in first feature
-        [1, 2],  # unseen in second feature
-        [2, 2],  # unseen in both features
-    ])
+    X_pred = np.array(
+        [
+            [2, 0],  # unseen in first feature
+            [1, 2],  # unseen in second feature
+            [2, 2],  # unseen in both features
+        ]
+    )
     y_pred = clf.predict(X_pred)
 
     # Predictions should have same length as test samples
@@ -55,7 +62,7 @@ def test_decision_tree_handles_unknown_values():
         assert p in np.unique(y)
 
 
-def test_decision_tree_passes_sklearn_checks():
+def test_decision_tree_passes_sklearn_checks() -> None:
     classifier = DecisionTreeClassifier()
-    for (estimator, check) in estimator_checks_generator(classifier):
+    for estimator, check in estimator_checks_generator(classifier):
         check(estimator)
