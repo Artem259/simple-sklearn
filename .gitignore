@@ -11,6 +11,7 @@
 # Exclude build artifacts
 /build/
 /dist/
+/src/simple_sklearn/_version.py
 **/*.egg-info
 
 # Exclude testing artifacts

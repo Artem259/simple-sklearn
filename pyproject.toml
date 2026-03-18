@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -53,8 +53,9 @@ dev = [
 [project.urls]
 Repository = "https://github.com/Artem259/simple-sklearn"
 
-[tool.setuptools.dynamic]
-version = {attr = "simple_sklearn.__version__"}
+[tool.setuptools_scm]
+version_file = "src/simple_sklearn/_version.py"
+fallback_version = "0.0.0"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -68,6 +69,13 @@ source = [
     "src/simple_sklearn",
     "*/site-packages/simple_sklearn",
     "*\\site-packages\\simple_sklearn"
+]
+
+[tool.coverage.run]
+omit = [
+    "src/simple_sklearn/_version.py",
+    "*/site-packages/simple_sklearn/_version.py",
+    "*\\site-packages\\simple_sklearn\\_version.py"
 ]
 
 [tool.ruff]
