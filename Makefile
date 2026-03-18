@@ -18,6 +18,7 @@ test:
 check: lint test
 
 build:
+	python -m check_sdist --inject-junk
 	python -m build
 	python -m twine check --strict dist/*
 

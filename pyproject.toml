@@ -48,6 +48,7 @@ dev = [
     "ruff==0.14.9",
     "build==1.4.0",
     "twine==6.2.0",
+    "check-sdist==1.4.0",
 ]
 
 [project.urls]
@@ -59,6 +60,16 @@ fallback_version = "0.0.0"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.check-sdist]
+git-only = [
+    ".gitattributes",
+    ".gitignore",
+    "Makefile",
+    "data/**",
+    "notebooks/**",
+]
+default-ignore = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

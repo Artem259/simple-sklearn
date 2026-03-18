@@ -1,0 +1,9 @@
+.github/ export-ignore
+
+data/ export-ignore
+notebooks/ export-ignore
+
+.gitattributes export-ignore
+.gitignore export-ignore
+.pre-commit-config.yaml export-ignore
+Makefile export-ignore
