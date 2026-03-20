@@ -126,6 +126,32 @@ jobs:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  testpypi-publish:
+    name: Publish to TestPyPI
+    needs: tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/simple-sklearn
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download built package
+        uses: actions/download-artifact@v4
+        with:
+          name: package-dist
+          path: dist/
+
+      - name: Publish package distributions to TestPyPI
+        if: ${{ !env.ACT }}
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
   pypi-publish:
     name: Publish to PyPI
     needs: tests
@@ -147,4 +173,5 @@ jobs:
           path: dist/
 
       - name: Publish package distributions to PyPI
+        if: ${{ !env.ACT }}
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0

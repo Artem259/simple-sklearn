@@ -57,6 +57,7 @@ Repository = "https://github.com/Artem259/simple-sklearn"
 [tool.setuptools_scm]
 version_file = "src/simple_sklearn/_version.py"
 fallback_version = "0.0.0"
+local_scheme = "no-local-version"
 
 [tool.setuptools.packages.find]
 where = ["src"]
