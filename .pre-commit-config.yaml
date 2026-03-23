@@ -8,6 +8,18 @@ repos:
       - id: check-toml
       - id: check-added-large-files
 
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.22.0
+    hooks:
+      - id: markdownlint-cli2
+        types: [markdown]
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        args: [ --strict ]
+
   - repo: https://github.com/kynan/nbstripout
     rev: 0.9.1
     hooks:
