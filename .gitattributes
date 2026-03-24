@@ -1,3 +1,12 @@
+# End-of-line normalization
+* text=auto
+
+Makefile text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
+
+# Archive exports
 .github/ export-ignore
 
 data/ export-ignore
