@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import validate_data
 
-from . import tools
+from . import _tools
 
 
 class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
@@ -40,7 +40,7 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         return self
 
     def _init_linkage_matrix(self, X: NDArray[Any]) -> NDArray[Any]:
-        linkage_matrix = tools.calc_distance_matrix(X, X)
+        linkage_matrix = _tools.calc_distance_matrix(X, X)
         np.fill_diagonal(linkage_matrix, np.inf)
         return linkage_matrix
 

@@ -7,7 +7,7 @@ from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils import check_random_state
 from sklearn.utils.validation import validate_data
 
-from . import tools
+from . import _tools
 
 
 class KMeans(ClusterMixin, BaseEstimator):  # type: ignore
@@ -68,15 +68,15 @@ class KMeans(ClusterMixin, BaseEstimator):  # type: ignore
         )
 
     def _recalc_labels(self, X: NDArray[Any]) -> NDArray[Any]:
-        distances = tools.calc_distance_matrix(X, self.cluster_centers_)
+        distances = _tools.calc_distance_matrix(X, self.cluster_centers_)
         return np.asarray(np.argmin(distances, axis=1))
 
     def _check_convergence(self, old_cluster_centers: NDArray[Any]) -> bool:
-        max_centers_dist_diff = tools.calc_max_zip_distance(self.cluster_centers_, old_cluster_centers)
+        max_centers_dist_diff = _tools.calc_max_zip_distance(self.cluster_centers_, old_cluster_centers)
         return max_centers_dist_diff <= self.e
 
     def _calc_inertia(self, X: NDArray[Any]) -> float:
-        distances = tools.calc_distance_matrix(X, self.cluster_centers_)
+        distances = _tools.calc_distance_matrix(X, self.cluster_centers_)
         return float(np.sum(np.min(distances, axis=1) ** 2))
 
     def __validate_params(self) -> None:
