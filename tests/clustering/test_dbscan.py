@@ -3,7 +3,7 @@ import sklearn
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from simple_sklearn.clustering.dbscan import DBSCAN
+from simple_sklearn.clustering import DBSCAN
 
 
 def test_dbscan_matches_sklearn_on_simple_data() -> None:

@@ -3,7 +3,7 @@ import numpy.testing as npt
 import sklearn
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from simple_sklearn.classification.k_neighbors import KNeighborsClassifier
+from simple_sklearn.classification import KNeighborsClassifier
 
 
 def test_kneighbors_predict_and_kneighbors_match_sklearn() -> None:

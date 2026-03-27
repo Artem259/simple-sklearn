@@ -4,7 +4,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from . import _tools
-from .k_means import KMeans
+from ._k_means import KMeans
 
 
 class KMedoids(KMeans):
