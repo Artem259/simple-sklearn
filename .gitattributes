@@ -10,7 +10,7 @@ Makefile text eol=lf
 .github/ export-ignore
 
 data/ export-ignore
-notebooks/ export-ignore
+docs/ export-ignore
 
 .gitattributes export-ignore
 .gitignore export-ignore
