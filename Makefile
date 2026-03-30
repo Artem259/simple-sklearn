@@ -1,4 +1,4 @@
-.PHONY: install setup lint test check build test-ci
+.PHONY: install setup lint build test check test-ci
 
 .DEFAULT_GOAL := setup
 
@@ -12,15 +12,15 @@ setup: install
 lint:
 	pre-commit run --all-files
 
-test:
-	pytest
-
-check: lint test
-
 build:
 	python -m check_sdist --inject-junk
 	python -m build
 	python -m twine check --strict dist/*
+
+test:
+	pytest
+
+check: lint build test
 
 test-ci:
 	act -P ubuntu-latest=catthehacker/ubuntu:act-latest --matrix os:ubuntu-latest --artifact-server-path ./act-artifacts

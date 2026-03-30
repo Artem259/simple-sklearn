@@ -68,6 +68,7 @@ git-only = [
     "docs/**",
     ".gitattributes",
     ".gitignore",
+    ".yamllint.yaml",
     "Makefile",
 ]
 default-ignore = true
