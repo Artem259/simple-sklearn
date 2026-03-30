@@ -4,7 +4,7 @@ import sklearn
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from simple_sklearn.clustering.k_means import KMeans
+from simple_sklearn.clustering import KMeans
 
 
 def test_kmeans_matches_sklearn_on_small_dataset() -> None:

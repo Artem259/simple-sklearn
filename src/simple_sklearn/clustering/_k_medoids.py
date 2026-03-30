@@ -3,8 +3,8 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from . import tools
-from .k_means import KMeans
+from . import _tools
+from ._k_means import KMeans
 
 
 class KMedoids(KMeans):
@@ -24,7 +24,7 @@ class KMedoids(KMeans):
         )
 
     def _init_fit(self, X: NDArray[Any]) -> None:
-        self.distance_matrix_ = tools.calc_distance_matrix(X, X)
+        self.distance_matrix_ = _tools.calc_distance_matrix(X, X)
 
     def _init_cluster_centers(self, X: NDArray[Any]) -> NDArray[Any]:
         if isinstance(self.init, str) and self.init == "random":
@@ -73,6 +73,6 @@ class KMedoids(KMeans):
 
 
 def _convert_kmeans_cluster_centers(X: NDArray[Any], kmeans_cluster_centers: NDArray[Any]) -> NDArray[Any]:
-    indices_with_centers = [tools.find_closest_point(X, center) for center in kmeans_cluster_centers]
+    indices_with_centers = [_tools.find_closest_point(X, center) for center in kmeans_cluster_centers]
     indices, _ = zip(*indices_with_centers, strict=True)
     return np.array(indices)

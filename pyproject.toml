@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -48,16 +48,30 @@ dev = [
     "ruff==0.14.9",
     "build==1.4.0",
     "twine==6.2.0",
+    "check-sdist==1.4.0",
 ]
 
 [project.urls]
 Repository = "https://github.com/Artem259/simple-sklearn"
 
-[tool.setuptools.dynamic]
-version = {attr = "simple_sklearn.__version__"}
+[tool.setuptools_scm]
+version_file = "src/simple_sklearn/_version.py"
+fallback_version = "0.0.0"
+local_scheme = "no-local-version"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.check-sdist]
+git-only = [
+    "data/**",
+    "docs/**",
+    ".gitattributes",
+    ".gitignore",
+    ".yamllint.yaml",
+    "Makefile",
+]
+default-ignore = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -68,6 +82,13 @@ source = [
     "src/simple_sklearn",
     "*/site-packages/simple_sklearn",
     "*\\site-packages\\simple_sklearn"
+]
+
+[tool.coverage.run]
+omit = [
+    "src/simple_sklearn/_version.py",
+    "*/site-packages/simple_sklearn/_version.py",
+    "*\\site-packages\\simple_sklearn\\_version.py"
 ]
 
 [tool.ruff]
@@ -106,7 +127,7 @@ fixable = ["ALL"]
 unfixable = []
 
 [tool.ruff.lint.per-file-ignores]
-"notebooks/**/*.{py,ipynb}" = [
+"docs/notebooks/**/*.{py,ipynb}" = [
     "S101",
     "T201",
 ]

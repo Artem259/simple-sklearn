@@ -5,13 +5,19 @@
 # Exclude IDE metadata
 /.idea/
 
+# Exclude Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Exclude Jupyter Notebook checkpoints
-**/.ipynb_checkpoints/
+.ipynb_checkpoints/
 
 # Exclude build artifacts
 /build/
 /dist/
-**/*.egg-info
+/src/simple_sklearn/_version.py
+*.egg-info
 
 # Exclude testing artifacts
 /act-artifacts/

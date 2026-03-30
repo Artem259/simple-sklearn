@@ -7,7 +7,7 @@ from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import validate_data
 
-from . import tools
+from . import _tools
 
 
 class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
@@ -23,7 +23,7 @@ class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
 
         num_samples = X.shape[0]
         self.labels_ = np.full(num_samples, -1)
-        self.distance_matrix_ = tools.calc_distance_matrix(X, X)
+        self.distance_matrix_ = _tools.calc_distance_matrix(X, X)
         self.neighbors_ = self._init_neighbors()
         self.core_sample_indices_ = self._init_core_sample_indices()
 

@@ -6,7 +6,7 @@ import sklearn
 from numpy.typing import NDArray
 from sklearn.utils.estimator_checks import estimator_checks_generator
 
-from simple_sklearn.clustering.agglomerative import AgglomerativeClustering
+from simple_sklearn.clustering import AgglomerativeClustering
 
 
 def _small_dataset() -> NDArray[Any]:

@@ -3,10 +3,13 @@ from typing import Any
 
 import sklearn
 
-from simple_sklearn.classification.decision_tree import DecisionTreeClassifier, DecisionTreeNode, LeafNode, SplitterNode
-from simple_sklearn.classification.k_neighbors import KNeighborsClassifier
-from simple_sklearn.classification.naive_bayes import NaiveBayesClassifier
-from simple_sklearn.classification.one_r import OneRClassifier
+from simple_sklearn.classification import (
+    DecisionTreeClassifier,
+    KNeighborsClassifier,
+    NaiveBayesClassifier,
+    OneRClassifier,
+)
+from simple_sklearn.classification.tree_structure import DecisionTreeNode, LeafNode, SplitterNode
 
 
 def one_r_classifier_info(clf: OneRClassifier) -> None:

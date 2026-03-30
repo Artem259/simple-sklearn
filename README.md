@@ -1,7 +1,7 @@
 # simple-sklearn
 
 [student_performance.csv](data/student_performance.csv) source:
-https://www.kaggle.com/datasets/rabieelkharoua/students-performance-dataset
+[Kaggle dataset](https://www.kaggle.com/datasets/rabieelkharoua/students-performance-dataset)
 
 [country_data.csv](data/country_data.csv) source:
-https://www.kaggle.com/datasets/rohan0301/unsupervised-learning-on-country-data
+[Kaggle dataset](https://www.kaggle.com/datasets/rohan0301/unsupervised-learning-on-country-data)
