@@ -29,10 +29,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-jupyter = [
+docs = [
     "notebook>=7.3.2",
     "matplotlib>=3.9.4",
     "seaborn>=0.13.2",
+    "mkdocs>=1.6.1,<2.0",
+    "mkdocs-material>=9.7.5",
+    "mkdocs-jupyter>=0.25.1",
+    "mkdocstrings-python>=2.0.3",
 ]
 quality = [
     "mypy>=1.19.1",
@@ -70,6 +74,7 @@ git-only = [
     ".gitignore",
     ".yamllint.yaml",
     "Makefile",
+    "mkdocs.yml",
 ]
 default-ignore = true
 

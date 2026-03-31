@@ -4,7 +4,7 @@
 
 install:
 	python -m pip install --upgrade pip
-	python -m pip install -e ".[jupyter,quality,test,dev]"
+	python -m pip install -e ".[docs,quality,test,dev]"
 
 setup: install
 	pre-commit install

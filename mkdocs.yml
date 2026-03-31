@@ -1,0 +1,58 @@
+site_name: simple-sklearn
+site_description: ToDo  # TODO
+site_author: Artem Poliakov
+repo_url: https://github.com/Artem259/simple-sklearn
+repo_name: Artem259/simple-sklearn
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.indexes
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      execute: true
+      include_source: true
+      ignore_h1_titles: true
+
+nav:
+  - Home: index.md
+  - Usage:
+      - Classification: notebooks/classification.ipynb
+      - Clustering: notebooks/clustering.ipynb
+      - tools:
+          - classification_tools: notebooks/tools/classification_tools.py
+          - clustering_tools: notebooks/tools/clustering_tools.py
+  - API Reference:  # TODO
+      - Overview: api/index.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: .

@@ -17,3 +17,4 @@ docs/ export-ignore
 .pre-commit-config.yaml export-ignore
 .yamllint.yaml export-ignore
 Makefile export-ignore
+mkdocs.yml export-ignore
