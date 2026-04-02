@@ -35,7 +35,8 @@ theme:
 plugins:
   - search
   - mkdocs-jupyter:
-      execute: true
+      execute: !ENV [EXECUTE_NOTEBOOKS, true]
+      allow_errors: false
       include_source: true
       ignore_h1_titles: true
 

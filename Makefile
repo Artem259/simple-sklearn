@@ -1,4 +1,4 @@
-.PHONY: install setup lint build test check test-ci
+.PHONY: install setup lint build test check docs docs-build test-ci
 
 .DEFAULT_GOAL := setup
 
@@ -21,6 +21,14 @@ test:
 	pytest
 
 check: lint build test
+
+docs: export EXECUTE_NOTEBOOKS=false
+docs:
+	mkdocs serve --clean --livereload
+
+docs-build:
+	mkdocs build --strict
+	python -m http.server 8000 --bind 127.0.0.1 --directory site
 
 test-ci:
 	act -P ubuntu-latest=catthehacker/ubuntu:act-latest --matrix os:ubuntu-latest --artifact-server-path ./act-artifacts
