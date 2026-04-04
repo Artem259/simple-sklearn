@@ -30,5 +30,15 @@ docs-build:
 	mkdocs build --strict
 	python -m http.server 8000 --bind 127.0.0.1 --directory site
 
-test-ci:
-	act -P ubuntu-latest=catthehacker/ubuntu:act-latest --matrix os:ubuntu-latest --artifact-server-path ./act-artifacts
+ACT_BASE := act -P ubuntu-latest=catthehacker/ubuntu:act-latest \
+                 --matrix os:ubuntu-latest \
+                 --artifact-server-path ./act-artifacts \
+                 --defaultbranch main \
+                 --env GITHUB_REF=refs/heads/main \
+                 --env GITHUB_BASE_REF=main
+
+act-push:
+	$(ACT_BASE) push
+
+act-pr:
+	$(ACT_BASE) pull_request
