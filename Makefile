@@ -1,4 +1,4 @@
-.PHONY: install setup lint build test check docs docs-build test-ci
+.PHONY: install setup lint build test check docs docs-build act-push act-pr
 
 .DEFAULT_GOAL := setup
 
