@@ -72,11 +72,11 @@ git-only = [
     "docs/**",
     ".gitattributes",
     ".gitignore",
+    ".markdownlint.yaml",
     ".yamllint.yaml",
     "Makefile",
     "mkdocs.yml",
 ]
-default-ignore = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
