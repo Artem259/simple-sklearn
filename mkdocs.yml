@@ -40,6 +40,24 @@ plugins:
       allow_errors: false
       include_source: true
       ignore_h1_titles: true
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ src ]
+          inventories:
+            - https://docs.python.org/3/objects.inv
+            - https://scikit-learn.org/stable/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+          options:
+            docstring_style: google
+            show_bases: true
+            show_root_heading: true
+            show_source: true
+            merge_init_into_class: true
+            separate_signature: true
+            show_signature_annotations: true
+            filters:
+              - "!^_"
 
 nav:
   - Home: index.md
@@ -49,8 +67,10 @@ nav:
       - tools:
           - classification_tools: notebooks/tools/classification_tools.py
           - clustering_tools: notebooks/tools/clustering_tools.py
-  - API Reference:  # TODO
-      - Overview: api/index.md
+  - API Reference:
+      - Overview: reference/index.md
+      - Classification: reference/classification/index.md
+      - Clustering: reference/clustering/index.md
 
 markdown_extensions:
   - admonition
