@@ -5,6 +5,9 @@ site_author: Artem Poliakov
 repo_url: https://github.com/Artem259/simple-sklearn
 repo_name: Artem259/simple-sklearn
 
+exclude_docs: |
+  notebooks/tools/
+
 theme:
   name: material
   features:
@@ -38,7 +41,6 @@ plugins:
   - mkdocs-jupyter:
       execute: !ENV [EXECUTE_NOTEBOOKS, true]
       allow_errors: false
-      include_source: true
       ignore_h1_titles: true
   - mkdocstrings:
       handlers:
@@ -61,12 +63,10 @@ plugins:
 
 nav:
   - Home: index.md
-  - Usage:
+  - Usage examples:
       - Classification: notebooks/classification.ipynb
       - Clustering: notebooks/clustering.ipynb
-      - tools:
-          - classification_tools: notebooks/tools/classification_tools.py
-          - clustering_tools: notebooks/tools/clustering_tools.py
+      - Tools: notebooks/tools.md
   - API Reference:
       - Overview: reference/index.md
       - Classification: reference/classification/index.md
