@@ -8,18 +8,20 @@ repo_name: Artem259/simple-sklearn
 exclude_docs: |
   notebooks/tools/
 
+watch:
+  - src
+
 theme:
   name: material
   features:
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.indexes
     - navigation.sections
     - navigation.top
     - search.suggest
     - search.highlight
     - content.code.copy
     - content.code.annotate
+    - toc.follow
+    - toc.integrate
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -62,7 +64,7 @@ plugins:
               - "!^_"
 
 nav:
-  - Home: index.md
+  - About: index.md
   - Usage examples:
       - Classification: notebooks/classification.ipynb
       - Clustering: notebooks/clustering.ipynb
