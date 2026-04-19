@@ -27,7 +27,7 @@ class KMeans(ClusterMixin, BaseEstimator):  # type: ignore
         self.random_state = random_state
 
     def fit(self, X: Any, y: Any = None) -> "KMeans":
-        self.__validate_params()
+        self.__validate_params(X)
         self.random_state_ = check_random_state(self.random_state)
         X = validate_data(self, X)
         X = np.array(X)
@@ -79,7 +79,7 @@ class KMeans(ClusterMixin, BaseEstimator):  # type: ignore
         distances = _tools.calc_distance_matrix(X, self.cluster_centers_)
         return float(np.sum(np.min(distances, axis=1) ** 2))
 
-    def __validate_params(self) -> None:
+    def __validate_params(self, X: Any) -> None:
         if not isinstance(self.n_clusters, int) or self.n_clusters < 1:
             raise ValueError(
                 f"The 'n_clusters' parameter must be an int in the range [1, inf). Got '{self.n_clusters}' instead."
@@ -98,8 +98,9 @@ class KMeans(ClusterMixin, BaseEstimator):  # type: ignore
                 )
         else:
             init_shape = np.array(self.init).shape
-            if not init_shape or init_shape[0] != self.n_clusters:
+            expected_shape = (self.n_clusters, X.shape[1])
+            if len(init_shape) != 2 or init_shape != expected_shape:
                 raise ValueError(
                     f"The shape of the initial centers {init_shape} "
-                    f"does not match the number of clusters {self.n_clusters}."
+                    f"does not match the expected shape (n_clusters, n_features): {expected_shape}."
                 )
