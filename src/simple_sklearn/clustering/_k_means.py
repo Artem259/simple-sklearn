@@ -77,11 +77,11 @@ class KMeans(ClusterMixin, BaseEstimator):  # type: ignore
         Raises:
             ValueError: If any hyperparameters are invalid.
         """
-        self.__validate_params(X)
-        self.random_state_ = check_random_state(self.random_state)
         X = validate_data(self, X)
         X = np.array(X)
+        self.__validate_params(X)
 
+        self.random_state_ = check_random_state(self.random_state)
         self._init_fit(X)
         self.cluster_centers_ = self._init_cluster_centers(X)
         self.labels_ = self._recalc_labels(X)

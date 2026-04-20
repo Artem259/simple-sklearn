@@ -16,9 +16,9 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         self.e = e
 
     def fit(self, X: Any, y: Any) -> "KNeighborsClassifier":
-        self.__validate_params()
         X, y = validate_data(self, X, y)
         X = np.array(X)
+        self.__validate_params()
 
         if type_of_target(y) in ("continuous", "continuous-multioutput"):
             raise ValueError(f"Unknown label type: {type_of_target(y)}")

@@ -55,9 +55,9 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         Raises:
             ValueError: If `n_clusters` or `linkage` parameters are invalid.
         """
-        self.__validate_params()
         X = validate_data(self, X)
         X = np.array(X)
+        self.__validate_params()
 
         num_samples = X.shape[0]
         labels = np.arange(num_samples)

@@ -58,9 +58,9 @@ class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
         Raises:
             ValueError: If `eps` or `min_samples` parameters are invalid.
         """
-        self.__validate_params()
         X = validate_data(self, X)
         X = np.array(X)
+        self.__validate_params()
 
         num_samples = X.shape[0]
         self.labels_ = np.full(num_samples, -1)

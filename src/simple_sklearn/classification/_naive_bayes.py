@@ -14,9 +14,9 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         self.min_categories = min_categories
 
     def fit(self, X: Any, y: Any) -> "NaiveBayesClassifier":
-        self.__validate_params(X)
         X, y = validate_data(self, X, y)
         X = np.array(X)
+        self.__validate_params(X)
 
         if type_of_target(y) in ("continuous", "continuous-multioutput"):
             raise ValueError(f"Unknown label type: {type_of_target(y)}")
