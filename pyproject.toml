@@ -42,13 +42,13 @@ quality = [
     "mypy>=1.19.1",
     "pandas-stubs>=2.2.3",
     "scipy-stubs>=1.13.1",
-    "pre-commit>=4.0.0",
 ]
 test = [
     "pytest>=8.4.2",
     "pytest-cov>=6.0.0",
 ]
 dev = [
+    "pre-commit>=4.0.0",
     "ruff==0.14.9",
     "build==1.4.0",
     "twine==6.2.0",

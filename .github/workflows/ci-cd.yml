@@ -31,7 +31,9 @@ jobs:
           python -m pip install -e ".[quality,test]"
 
       - name: Run pre-commit
-        run: pre-commit run --all-files
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
 
   build-check:
     name: Verify Build
@@ -129,9 +131,6 @@ jobs:
   docs-build:
     name: Build Documentation
     needs: quality
-    if: |
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'pull_request' && github.base_ref == 'main')
     runs-on: ubuntu-latest
 
     permissions:
@@ -141,6 +140,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -164,7 +165,9 @@ jobs:
           MKDOCS_SITE_URL: ${{ steps.pages.outputs.base_url }}
 
       - name: Upload docs HTML artifact
-        if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        if: |
+          (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
         uses: actions/upload-artifact@v4
         with:
           name: docs-html
@@ -172,7 +175,7 @@ jobs:
           retention-days: 7
 
       - name: Upload GitHub Pages artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'release' && github.event.action == 'published'
         uses: actions/upload-pages-artifact@v4
         with:
           path: site/
@@ -180,8 +183,8 @@ jobs:
 
   docs-publish:
     name: Publish to GitHub Pages
-    needs: [tests, docs-build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [ tests, docs-build ]
+    if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
 
     environment:
