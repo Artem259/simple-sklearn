@@ -68,12 +68,9 @@ where = ["src"]
 
 [tool.check-sdist]
 git-only = [
-    "data/**",
-    "docs/**",
-    ".gitattributes",
-    ".gitignore",
-    ".markdownlint.yaml",
-    ".yamllint.yaml",
+    ".*",
+    "data/",
+    "docs/",
     "Makefile",
     "mkdocs.yml",
 ]
