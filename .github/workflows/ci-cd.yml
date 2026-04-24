@@ -8,6 +8,10 @@ on:
   release:
     types: [ published ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 permissions:
   contents: read
 
@@ -131,6 +135,14 @@ jobs:
           files: ./junit.xml
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  tests-passed:
+    name: All Tests Passed
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Success
+        run: echo "All matrix tests passed successfully."
 
   docs-build:
     name: Build Documentation
