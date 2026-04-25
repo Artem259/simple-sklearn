@@ -21,7 +21,6 @@ theme:
     - content.code.copy
     - content.code.annotate
     - toc.follow
-    - toc.integrate
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -79,3 +78,5 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.snippets:
       base_path: .
+  - toc:
+      toc_depth: 2
