@@ -58,6 +58,7 @@ plugins:
             show_source: true
             separate_signature: true
             show_signature_annotations: true
+            inherited_members: true
             filters:
               - "!^_"
 

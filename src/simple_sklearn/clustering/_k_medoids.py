@@ -9,10 +9,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 from . import _tools
-from ._k_means import KMeans
+from ._base_partitional import BasePartitionalClustering
 
 
-class KMedoids(KMeans):
+class KMedoids(BasePartitionalClustering):
     """Perform K-Medoids clustering.
 
     K-Medoids clustering partitions data into `n_clusters` by minimizing the sum of
@@ -54,53 +54,34 @@ class KMedoids(KMeans):
         max_iter: int = 300,
         random_state: int | np.random.RandomState | None = None,
     ) -> None:
-        super().__init__(
-            n_clusters=n_clusters,
-            init=init,
-            max_iter=max_iter,
-            e=0,
-            random_state=random_state,
-        )
+        self.n_clusters = n_clusters
+        self.init = init
+        self.max_iter = max_iter
+        self.random_state = random_state
 
     def _init_fit(self, X: NDArray[Any]) -> None:
-        """Perform preliminary setups by calculating the pairwise distance matrix.
-
-        Args:
-            X: The original input data.
-        """
+        """Perform preliminary setups by calculating the pairwise distance matrix."""
         self.distance_matrix_ = _tools.calc_distance_matrix(X, X)
 
-    def _init_cluster_centers(self, X: NDArray[Any]) -> NDArray[Any]:
+    def _init_cluster_centers(self, X: NDArray[Any]) -> NDArray[np.float64]:
         """Initialize the medoids based on the `init` strategy.
 
         If `init` is random, indices are chosen directly from the data. Otherwise,
         it maps the provided initial centers to the nearest actual data points.
-
-        Args:
-            X: The original input data.
-
-        Returns:
-            An array containing the initial medoids.
         """
         if isinstance(self.init, str) and self.init == "random":
             indices = self.random_state_.choice(X.shape[0], self.n_clusters, replace=False)
         else:
-            kmeans_cluster_centers = super()._init_cluster_centers(X)
-            indices = _convert_kmeans_cluster_centers(X, kmeans_cluster_centers)
+            cluster_centers = np.array(self.init)
+            indices = _convert_to_medoids(X, cluster_centers)
 
         self.cluster_center_indices_ = indices
         return np.asarray(X[indices])
 
-    def _recalc_cluster_centers(self, X: NDArray[Any]) -> NDArray[Any]:
+    def _recalc_cluster_centers(self, X: NDArray[Any]) -> NDArray[np.float64]:
         """Recalculate medoids by finding the point minimizing the distance sum in each cluster.
 
         If a cluster becomes empty, its medoid remains unchanged from the previous iteration.
-
-        Args:
-            X: The original input data.
-
-        Returns:
-            An array containing the newly computed medoids.
         """
         new_indices = []
         new_centers = []
@@ -124,62 +105,47 @@ class KMedoids(KMeans):
         self.cluster_center_indices_ = np.array(new_indices)
         return np.array(new_centers)
 
-    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[Any]:
-        """Recalculate labels by finding the closest medoid for each sample.
-
-        Args:
-            X: The original input data.
-
-        Returns:
-            An array of new cluster labels.
-        """
+    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int_]:
+        """Recalculate labels by finding the closest medoid for each sample."""
         distances_to_medoids = self.distance_matrix_[:, self.cluster_center_indices_]
         return np.asarray(np.argmin(distances_to_medoids, axis=1))
 
-    def _check_convergence(self, old_cluster_centers: NDArray[Any]) -> bool:
+    def _check_convergence(self, old_cluster_centers: NDArray[np.float64]) -> bool:
         """Check if the algorithm has converged.
 
         Convergence is declared if the medoids strictly stop changing
         between iterations.
-
-        Args:
-            old_cluster_centers: The medoids from the previous iteration.
-
-        Returns:
-            True if the model has converged, False otherwise.
         """
         return np.array_equal(self.cluster_centers_, old_cluster_centers)
 
     def _calc_inertia(self, X: NDArray[Any]) -> float:
         """Calculate the inertia of the cluster assignments.
 
-        Inertia for K-Medoids is the sum of absolute distances of each sample
+        Inertia for K-Medoids is the sum of distances of each sample
         to its closest medoid.
-
-        Args:
-            X: The original input data.
-
-        Returns:
-            The calculated inertia value.
         """
         distances_to_medoids = self.distance_matrix_[:, self.cluster_center_indices_]
         min_distances = np.min(distances_to_medoids, axis=1)
         return float(np.sum(min_distances))
 
+    def _validate_self_params(self, X: NDArray[Any]) -> None:
+        """No algorithm-specific hyperparameter validation required for K-Medoids."""
+        pass
 
-def _convert_kmeans_cluster_centers(X: NDArray[Any], kmeans_cluster_centers: NDArray[Any]) -> NDArray[Any]:
+
+def _convert_to_medoids(X: NDArray[Any], cluster_centers: NDArray[np.float64]) -> NDArray[np.int_]:
     """Map continuous coordinates to the indices of the closest actual data points.
 
-    This ensures that when a continuous initialization strategy (like standard K-Means)
-    is used, the resulting centers are forced to be valid medoids (actual samples in X).
+    This ensures that when a continuous initialization strategy is used,
+    the resulting centers are forced to be valid medoids (actual samples in X).
 
     Args:
         X: The original input data.
-        kmeans_cluster_centers: The hypothetical cluster centers.
+        cluster_centers: The hypothetical cluster centers.
 
     Returns:
         An array of indices pointing to the samples in `X` closest to the input centers.
     """
-    indices_with_centers = [_tools.find_closest_point(X, center) for center in kmeans_cluster_centers]
+    indices_with_centers = [_tools.find_closest_point(X, center) for center in cluster_centers]
     indices, _ = zip(*indices_with_centers, strict=True)
     return np.array(indices)
