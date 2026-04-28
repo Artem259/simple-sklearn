@@ -10,6 +10,7 @@ import numpy as np
 from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import validate_data
+from typing_extensions import Self
 
 from . import _tools
 
@@ -45,7 +46,7 @@ class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
         self.eps = eps
         self.min_samples = min_samples
 
-    def fit(self, X: Any, y: Any = None) -> "DBSCAN":
+    def fit(self, X: Any, y: Any = None) -> Self:
         """Fit the DBSCAN clustering model.
 
         Args:
@@ -60,7 +61,7 @@ class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
         """
         X = validate_data(self, X)
         X = np.array(X)
-        self.__validate_params()
+        self._validate_self_params()
 
         num_samples = X.shape[0]
         self.labels_ = np.full(num_samples, -1)
@@ -154,7 +155,7 @@ class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
         """
         return bool(self._core_sample_mask[index])
 
-    def __validate_params(self) -> None:
+    def _validate_self_params(self) -> None:
         """Validate the hyperparameters.
 
         Raises:

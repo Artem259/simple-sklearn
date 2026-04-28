@@ -10,6 +10,7 @@ import numpy as np
 from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import validate_data
+from typing_extensions import Self
 
 from . import _tools
 
@@ -42,7 +43,7 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         self.n_clusters = n_clusters
         self.linkage = linkage
 
-    def fit(self, X: Any, y: Any = None) -> "AgglomerativeClustering":
+    def fit(self, X: Any, y: Any = None) -> Self:
         """Fit the agglomerative clustering model.
 
         Args:
@@ -57,7 +58,7 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         """
         X = validate_data(self, X)
         X = np.array(X)
-        self.__validate_params()
+        self._validate_self_params()
 
         num_samples = X.shape[0]
         labels = np.arange(num_samples)
@@ -180,7 +181,7 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             X=X,
         )
 
-    def __validate_params(self) -> None:
+    def _validate_self_params(self) -> None:
         """Validate the hyperparameters.
 
         Raises:

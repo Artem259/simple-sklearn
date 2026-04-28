@@ -6,6 +6,7 @@ from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted, validate_data
+from typing_extensions import Self
 
 
 class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
@@ -15,10 +16,10 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         self.weights = weights
         self.e = e
 
-    def fit(self, X: Any, y: Any) -> "KNeighborsClassifier":
+    def fit(self, X: Any, y: Any) -> Self:
         X, y = validate_data(self, X, y)
         X = np.array(X)
-        self.__validate_params()
+        self._validate_self_params()
 
         if type_of_target(y) in ("continuous", "continuous-multioutput"):
             raise ValueError(f"Unknown label type: {type_of_target(y)}")
@@ -30,7 +31,6 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return self
 
     def predict(self, X: Any) -> NDArray[Any]:
-        self.__validate_params()
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
         X = np.array(X)
@@ -39,15 +39,12 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return np.asarray(self.classes_[np.argmax(decision_scores, axis=1)])
 
     def kneighbors(self, X: Any) -> tuple[NDArray[Any], NDArray[Any]]:
-        self.__validate_params()
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
 
         return self._kneighbors(X)
 
     def _decision_function(self, X: NDArray[Any]) -> NDArray[Any]:
-        self.__validate_params()
-
         decision_scores = []
         for x in X:
             x_neigh_indices = self._find_kneighbors_indices(x, self.n_neighbors)
@@ -93,7 +90,7 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         distances = np.sqrt(distances_squared)
         return distances, distances_squared
 
-    def __validate_params(self) -> None:
+    def _validate_self_params(self) -> None:
         if not isinstance(self.n_neighbors, int) or self.n_neighbors < 1:
             raise ValueError(
                 f"The 'n_neighbors' parameter of KNeighborsClassifier must be an int in the range [1, inf). "

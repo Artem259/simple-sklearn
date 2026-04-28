@@ -6,6 +6,7 @@ from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted, validate_data
+from typing_extensions import Self
 
 
 class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
@@ -13,10 +14,10 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         super().__init__()
         self.min_categories = min_categories
 
-    def fit(self, X: Any, y: Any) -> "NaiveBayesClassifier":
+    def fit(self, X: Any, y: Any) -> Self:
         X, y = validate_data(self, X, y)
         X = np.array(X)
-        self.__validate_params(X)
+        self._validate_self_params(X)
 
         if type_of_target(y) in ("continuous", "continuous-multioutput"):
             raise ValueError(f"Unknown label type: {type_of_target(y)}")
@@ -87,7 +88,7 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
             return float(group.loc[feature_index, y_value, feature_value])
         return float(self.feature_unknown_log_probs_[feature_index][y_value])
 
-    def __validate_params(self, X: Any) -> None:
+    def _validate_self_params(self, X: NDArray[Any]) -> None:
         if self.min_categories is not None:
             min_categories = np.array(self.min_categories)
             if min_categories.shape[0] != X.shape[1]:

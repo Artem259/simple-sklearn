@@ -6,13 +6,14 @@ from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted, validate_data
+from typing_extensions import Self
 
 
 class OneRClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
     def __init__(self) -> None:
         super().__init__()
 
-    def fit(self, X: Any, y: Any) -> "OneRClassifier":
+    def fit(self, X: Any, y: Any) -> Self:
         X, y = validate_data(self, X, y)
         X = np.array(X)
 
