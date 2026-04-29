@@ -16,6 +16,7 @@ theme:
   features:
     - navigation.sections
     - navigation.top
+    - navigation.expand
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -51,10 +52,13 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://scikit-learn.org/stable/objects.inv
             - https://numpy.org/doc/stable/objects.inv
+            - https://pandas.pydata.org/docs/objects.inv
           options:
             docstring_style: google
             show_bases: true
             show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
             show_source: true
             separate_signature: true
             show_signature_annotations: true
@@ -70,8 +74,18 @@ nav:
       - Tools: notebooks/tools.md
   - API Reference:
       - Overview: reference/index.md
-      - Classification: reference/classification/index.md
-      - Clustering: reference/clustering/index.md
+      - Classification:
+          - Overview: reference/classification/index.md
+          - One Rule: reference/classification/one_r.md
+          - Naive Bayes: reference/classification/naive_bayes.md
+          - K-Nearest Neighbor: reference/classification/k_neighbors.md
+          - Decision Tree: reference/classification/decision_tree.md
+      - Clustering:
+          - Overview: reference/clustering/index.md
+          - K-Means: reference/clustering/k_means.md
+          - K-Medoids: reference/clustering/k_medoids.md
+          - DBSCAN: reference/clustering/dbscan.md
+          - Agglomerative: reference/clustering/agglomerative.md
 
 markdown_extensions:
   - admonition
@@ -79,5 +93,3 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.snippets:
       base_path: .
-  - toc:
-      toc_depth: 2

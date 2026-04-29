@@ -38,7 +38,7 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
     children_: NDArray[np.int_]
     distances_: NDArray[np.float64]
 
-    def __init__(self, n_clusters: int = 2, linkage: str = "ward"):
+    def __init__(self, n_clusters: int = 2, linkage: str = "ward") -> None:
         super().__init__()
         self.n_clusters = n_clusters
         self.linkage = linkage
