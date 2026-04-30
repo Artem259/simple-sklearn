@@ -38,16 +38,23 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         random_state_: The validated `RandomState` instance used for internal operations.
     """
 
-    n_clusters: int
-    init: str | NDArray[Any] | list[Any]
-    max_iter: int
-    random_state: int | np.random.RandomState | None
-
     cluster_centers_: NDArray[np.float64]
     labels_: NDArray[np.int_]
     n_iter_: int
     inertia_: float
     random_state_: np.random.RandomState
+
+    def __init__(
+        self,
+        n_clusters: int = 8,
+        init: str | NDArray[Any] | list[Any] = "random",
+        max_iter: int = 300,
+        random_state: int | np.random.RandomState | None = None,
+    ) -> None:
+        self.n_clusters = n_clusters
+        self.init = init
+        self.max_iter = max_iter
+        self.random_state = random_state
 
     def fit(self, X: Any, y: Any = None) -> Self:
         """Fit the clustering model.

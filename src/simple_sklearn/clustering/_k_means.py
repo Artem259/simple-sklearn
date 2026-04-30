@@ -49,11 +49,13 @@ class KMeans(BasePartitionalClustering):
         e: float = 1e-4,
         random_state: int | np.random.RandomState | None = None,
     ) -> None:
-        self.n_clusters = n_clusters
-        self.init = init
-        self.max_iter = max_iter
+        super().__init__(
+            n_clusters=n_clusters,
+            init=init,
+            max_iter=max_iter,
+            random_state=random_state,
+        )
         self.e = e
-        self.random_state = random_state
 
     def _init_fit(self, X: NDArray[Any]) -> None:
         """No preliminary setup required for K-Means."""
