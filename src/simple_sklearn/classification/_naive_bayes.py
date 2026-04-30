@@ -1,3 +1,8 @@
+"""Naive Bayes Classification.
+
+This module provides the `NaiveBayesClassifier` class.
+"""
+
 from typing import Any, cast
 
 import numpy as np
@@ -10,11 +15,54 @@ from typing_extensions import Self
 
 
 class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
+    """Perform Categorical Naive Bayes classification.
+
+    The categorical Naive Bayes classifier assumes that features are discrete.
+    It evaluates the conditional probabilities of feature values given the target class.
+    To handle zero-frequency issues during training, it applies Laplace (add-one) smoothing.
+    Additionally, it calculates a fallback probability to manage unseen feature values
+    encountered during prediction.
+
+    Args:
+        min_categories: The minimum number of categories per feature for Laplace smoothing.
+            Can be an array-like of shape `(n_features,)`. If `None`, the number of
+            categories is inferred from the training data.
+
+    Attributes:
+        classes_: The unique class labels observed in the training data.
+        class_log_prior_: A pandas.Series containing the smoothed empirical log probability of each class.
+        feature_unique_values_: A list of sets containing the unique values encountered for each feature.
+        feature_log_prob_: A list of pandas.Series containing the empirical log probabilities
+            of feature values given the class.
+        feature_unknown_log_probs_: A list of pandas.Series containing the fallback log
+            probabilities for unknown feature values given the class.
+        num_features_: The number of features seen during fitting.
+    """
+
+    classes_: NDArray[Any]
+    class_log_prior_: pd.Series
+    feature_unique_values_: list[set[Any]]
+    feature_log_prob_: list[pd.Series]
+    feature_unknown_log_probs_: list[pd.Series]
+    num_features_: int
+
     def __init__(self, min_categories: Any = None) -> None:
         super().__init__()
         self.min_categories = min_categories
 
     def fit(self, X: Any, y: Any) -> Self:
+        """Fit the Naive Bayes classification model.
+
+        Args:
+            X: Training instances to fit the model. Can be an array-like of shape `(n_samples, n_features)`.
+            y: Target values (class labels) for the training instances. Array-like of shape `(n_samples,)`.
+
+        Returns:
+            The fitted instance.
+
+        Raises:
+            ValueError: If `y` is of a continuous type or if `min_categories` has an incompatible shape.
+        """
         X, y = validate_data(self, X, y)
         X = np.array(X)
         self._validate_self_params(X)
@@ -24,7 +72,7 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         self.classes_, y = np.unique(y, return_inverse=True)
 
         y_series = pd.Series(y)
-        self.class_log_prior_ = np.log(y_series.value_counts(normalize=True).sort_index())
+        self.class_log_prior_ = cast(pd.Series, np.log(y_series.value_counts(normalize=True).sort_index()))
 
         min_categories = np.array(self.min_categories) if self.min_categories is not None else None
         self.feature_unique_values_ = []
@@ -56,6 +104,14 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return self
 
     def predict(self, X: Any) -> NDArray[Any]:
+        """Predict class labels for the given input data.
+
+        Args:
+            X: Instances to predict. Can be an array-like of shape `(n_samples, n_features)`.
+
+        Returns:
+            An array of shape `(n_samples,)` containing the predicted class labels for each sample.
+        """
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
         X = np.array(X)
@@ -64,6 +120,15 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return np.asarray(self.classes_[np.argmax(decision_scores, axis=1)])
 
     def _decision_function(self, X: NDArray[Any]) -> NDArray[Any]:
+        """Compute the unnormalized posterior log probability for each class.
+
+        Args:
+            X: Instances to evaluate. An array-like of shape `(n_samples, n_features)`.
+
+        Returns:
+            An array of shape `(n_samples, n_classes)` containing the decision scores
+            (log probabilities) for each sample and class.
+        """
         feature_probs_concat = pd.concat(self.feature_log_prob_, keys=range(self.num_features_))
 
         decision_scores = []
@@ -79,6 +144,19 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return np.array(decision_scores)
 
     def _insert_missing_probs(self, group: pd.Series, x: NDArray[Any]) -> float:
+        """Retrieve the log probability for a feature value or apply the unknown fallback.
+
+        Checks if the observed feature value is present in the training data for the given
+        feature and class group. If known, returns its precomputed log probability. If the
+        value was not seen during training, returns the smoothed fallback log probability.
+
+        Args:
+            group: A pandas.Series representing the log probabilities for a specific feature and class.
+            x: The single instance being evaluated.
+
+        Returns:
+            The log probability of the feature value given the class.
+        """
         feature_index = group.index.get_level_values(0).tolist()[0]
         y_value = group.index.get_level_values("y").tolist()[0]
         known_values = group.index.get_level_values("feat_v").tolist()
@@ -89,6 +167,14 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return float(self.feature_unknown_log_probs_[feature_index][y_value])
 
     def _validate_self_params(self, X: NDArray[Any]) -> None:
+        """Validate the hyperparameters against the training data.
+
+        Args:
+            X: Training instances. Array-like of shape `(n_samples, n_features)`.
+
+        Raises:
+            ValueError: If `min_categories` is provided but its length does not match `n_features`.
+        """
         if self.min_categories is not None:
             min_categories = np.array(self.min_categories)
             if min_categories.shape[0] != X.shape[1]:
