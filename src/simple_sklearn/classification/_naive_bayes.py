@@ -123,7 +123,7 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         """Compute the unnormalized posterior log probability for each class.
 
         Args:
-            X: Instances to evaluate. An array-like of shape `(n_samples, n_features)`.
+            X: Instances to evaluate. An array of shape `(n_samples, n_features)`.
 
         Returns:
             An array of shape `(n_samples, n_classes)` containing the decision scores
@@ -170,7 +170,7 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         """Validate the hyperparameters against the training data.
 
         Args:
-            X: Training instances. Array-like of shape `(n_samples, n_features)`.
+            X: Training instances. Array of shape `(n_samples, n_features)`.
 
         Raises:
             ValueError: If `min_categories` is provided but its length does not match `n_features`.

@@ -78,7 +78,7 @@ nav:
           - Overview: reference/classification/index.md
           - One Rule: reference/classification/one_r.md
           - Naive Bayes: reference/classification/naive_bayes.md
-          - K-Nearest Neighbor: reference/classification/k_neighbors.md
+          - K-Nearest Neighbors: reference/classification/k_neighbors.md
           - Decision Tree: reference/classification/decision_tree.md
       - Clustering:
           - Overview: reference/clustering/index.md
