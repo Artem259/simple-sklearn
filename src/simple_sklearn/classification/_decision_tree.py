@@ -1,3 +1,8 @@
+"""Decision Tree Classification.
+
+This module provides the `DecisionTreeClassifier` class and its associated node structures.
+"""
+
 from typing import Any
 
 import numpy as np
@@ -10,10 +15,45 @@ from typing_extensions import Self
 
 
 class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
+    """Perform Decision Tree classification using the ID3 algorithm.
+
+    The Decision Tree classifier builds a tree from categorical features by recursively
+    partitioning the data based on the feature that maximizes information gain
+    (decreases entropy).
+
+    Note:
+        This implementation is strictly for discrete/categorical feature data.
+        Passing continuous features will result in severe overfitting.
+
+    Attributes:
+        classes_: The unique class labels observed in the training data.
+        num_features_: The number of features seen during fitting.
+        feature_unique_values_: A list of sets containing the unique values encountered for each feature.
+        tree_: The root node of the fitted decision tree (a `DecisionTreeNode` instance).
+            Nodes store integer-encoded labels mapped to the `classes_` array.
+    """
+
+    classes_: NDArray[Any]
+    num_features_: int
+    feature_unique_values_: list[set[Any]]
+    tree_: "DecisionTreeNode"
+
     def __init__(self) -> None:
         super().__init__()
 
     def fit(self, X: Any, y: Any) -> Self:
+        """Fit the Decision Tree classification model.
+
+        Args:
+            X: Training instances to fit the model. Can be an array-like of shape `(n_samples, n_features)`.
+            y: Target values (class labels) for the training instances. Array-like of shape `(n_samples,)`.
+
+        Returns:
+            The fitted instance.
+
+        Raises:
+            ValueError: If `y` is of a continuous type.
+        """
         X, y = validate_data(self, X, y)
         X = np.array(X)
 
@@ -32,6 +72,18 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return self
 
     def predict(self, X: Any) -> NDArray[Any]:
+        """Predict class labels for the given input data.
+
+        Traverses the fitted decision tree for each sample. If an unseen feature value
+        is encountered at a split node, the model falls back to predicting the majority
+        class label of that specific node.
+
+        Args:
+            X: Instances to predict. Can be an array-like of shape `(n_samples, n_features)`.
+
+        Returns:
+            An array of shape `(n_samples,)` containing the predicted class labels for each sample.
+        """
         check_is_fitted(self)
         X = validate_data(self, X, reset=False)
         X = np.array(X)
@@ -54,6 +106,16 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return np.asarray(self.classes_[y_pred])
 
     def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "DecisionTreeNode":
+        """Recursively build the decision tree using the ID3 algorithm.
+
+        Args:
+            df: A pandas.DataFrame containing the training data and target labels for the current node.
+            feat_indices: A set of remaining feature indices available for splitting.
+
+        Returns:
+            A `DecisionTreeNode` representing the root of the constructed subtree
+            (either a `SplitterNode` or `LeafNode`).
+        """
         y_counts = df["y"].value_counts()
         most_frequent_y = y_counts.index[0]
 
@@ -76,28 +138,58 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return node
 
     def _information_gain(self, df: pd.DataFrame, feat_index: int) -> float:
+        """Calculate the information gain for a potential feature split.
+
+        Args:
+            df: A pandas.DataFrame containing the current node's data and labels.
+            feat_index: The index of the feature to evaluate.
+
+        Returns:
+            The calculated information gain (reduction in entropy).
+        """
         total_entropy = self._calc_entropy(df)
-        values = df.iloc[:, feat_index].unique()
+        values = df[feat_index].unique()
         weighted_entropy = 0.0
 
         for value in values:
-            subset = df[df.iloc[:, feat_index] == value]
+            subset = df[df[feat_index] == value]
             weight = len(subset) / len(df)
             weighted_entropy += weight * self._calc_entropy(subset)
 
         return total_entropy - weighted_entropy
 
     def _calc_entropy(self, df: pd.DataFrame) -> float:
+        """Calculate the Shannon entropy of the target labels in the given data.
+
+        Args:
+            df: A pandas.DataFrame containing the target labels in a 'y' column.
+
+        Returns:
+            The calculated entropy value.
+        """
         value_counts = df["y"].value_counts(normalize=True)
         entropy = float(-np.sum(value_counts * np.log2(value_counts)))
         return entropy
 
 
 class DecisionTreeNode:
+    """Base class for nodes in the decision tree."""
+
     pass
 
 
 class SplitterNode(DecisionTreeNode):
+    """A decision tree node representing a feature split.
+
+    Args:
+        feat_index: The index of the feature used for splitting at this node.
+        majority_label: The integer-encoded majority class label at this node,
+            used as a fallback during prediction.
+
+    Attributes:
+        children: A dictionary mapping feature values to child `DecisionTreeNode` instances.
+    """
+
     def __init__(self, feat_index: int, majority_label: int) -> None:
         self.feat_index: int = feat_index
         self.majority_label: int = majority_label
@@ -105,5 +197,11 @@ class SplitterNode(DecisionTreeNode):
 
 
 class LeafNode(DecisionTreeNode):
+    """A decision tree node representing a terminal leaf.
+
+    Args:
+        label: The integer-encoded predicted class label for this leaf.
+    """
+
     def __init__(self, label: int) -> None:
         self.label: int = label
