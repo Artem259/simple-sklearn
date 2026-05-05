@@ -86,9 +86,8 @@ def find_closest_point(points: NDArray[Any], target: NDArray[Any]) -> tuple[int,
         target: The reference target point of shape `(n_features,)`.
 
     Returns:
-        A tuple containing:
-            - index: The integer index of the closest point in the `points` array.
-            - closest_point: The coordinates of the closest point itself.
+        index: The integer index of the closest point in the `points` array.
+        closest_point: The coordinates of the closest point itself.
     """
     distances = distance.cdist(points, [target]).flatten()
     closest_index = int(np.argmin(distances))

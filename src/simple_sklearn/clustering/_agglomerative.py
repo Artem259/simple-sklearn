@@ -104,10 +104,9 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             linkage_indices: A mapping of matrix indices to original sample indices.
 
         Returns:
-            A tuple containing:
-                - child: A list of the two indices that were merged.
-                - distance: The computed distance between the merged clusters.
-                - linkage_matrix: The updated distance matrix.
+            child: A list of the two indices that were merged.
+            distance: The computed distance between the merged clusters.
+            linkage_matrix: The updated distance matrix.
         """
         unraveled = np.unravel_index(np.argmin(linkage_matrix), linkage_matrix.shape)
         lm_min_index = tuple(int(idx) for idx in sorted(unraveled))

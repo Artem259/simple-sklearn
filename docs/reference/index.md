@@ -1,5 +1,6 @@
-# Overview
+# Simple-Sklearn
 
 ::: simple_sklearn
     options:
-      show_root_heading: false
+      members:
+        - __version__
