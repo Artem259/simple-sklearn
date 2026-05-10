@@ -4,7 +4,7 @@ from sklearn.utils.estimator_checks import estimator_checks_generator
 from simple_sklearn.clustering import KMedoids
 
 
-def test_kmedoids_basic_properties() -> None:
+def test_kmedoids_fit() -> None:
     # small dataset with two clusters
     rng = np.random.RandomState(0)
     X = np.vstack(

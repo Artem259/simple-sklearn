@@ -20,7 +20,7 @@ def _small_dataset() -> NDArray[Any]:
     return X
 
 
-def test_agglomerative_distances_match_sklearn_for_linkages() -> None:
+def test_agglomerative_matches_sklearn_on_simple_data() -> None:
     X = _small_dataset()
     for linkage in ["single", "complete", "average", "ward"]:
         custom = AgglomerativeClustering(n_clusters=2, linkage=linkage)
