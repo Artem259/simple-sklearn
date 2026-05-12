@@ -26,7 +26,7 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         n_neighbors: The number of nearest neighbors.
         weights: The weight function used in prediction. Must be one of "uniform",
             "distance", or "distance_squared".
-        e: A small float added to distances to prevent division by zero when
+        eps: A small float added to distances to prevent division by zero when
             calculating weights.
 
     Attributes:
@@ -39,11 +39,11 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
     fitted_x_: NDArray[Any]
     fitted_y_: NDArray[Any]
 
-    def __init__(self, n_neighbors: int = 5, weights: str = "uniform", e: float = 1e-9) -> None:
+    def __init__(self, n_neighbors: int = 5, weights: str = "uniform", eps: float = 1e-9) -> None:
         super().__init__()
         self.n_neighbors = n_neighbors
         self.weights = weights
-        self.e = e
+        self.eps = eps
 
     def fit(self, X: Any, y: Any) -> Self:
         """Fit the k-nearest neighbors classification model.
@@ -125,10 +125,10 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
                 x, X_targets=self.fitted_x_[x_neigh_indices]
             )
             if self.weights == "distance":
-                weights = 1 / (x_neigh_distances + self.e)
+                weights = 1 / (x_neigh_distances + self.eps)
                 x_decision_scores = np.bincount(x_neigh_labels, minlength=len(self.classes_), weights=weights)
             elif self.weights == "distance_squared":
-                weights = 1 / (x_neigh_distances_squared + self.e)
+                weights = 1 / (x_neigh_distances_squared + self.eps)
                 x_decision_scores = np.bincount(x_neigh_labels, minlength=len(self.classes_), weights=weights)
             else:  # self.weights == 'uniform'
                 x_decision_scores = np.bincount(x_neigh_labels, minlength=len(self.classes_))
@@ -201,7 +201,7 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
 
         Raises:
             ValueError: If `n_neighbors` is not a positive integer, if `weights` is not
-                one of the supported string literals, or if `e` is not a float in the range (0, 1).
+                one of the supported string literals, or if `eps` is not a float in the range (0, 1).
         """
         if not isinstance(self.n_neighbors, int) or self.n_neighbors < 1:
             raise ValueError(
@@ -213,8 +213,8 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
                 f"The 'weights' parameter of KNeighborsClassifier must be a str among "
                 f"['distance', 'distance_squared', 'uniform']. Got '{self.weights}' instead."
             )
-        if not isinstance(self.e, float) or not 0 < self.e < 1:
+        if not isinstance(self.eps, float) or not 0 < self.eps < 1:
             raise ValueError(
-                f"The 'e' parameter of KNeighborsClassifier must be a float in the range (0, 1). "
-                f"Got '{self.e}' instead."
+                f"The 'eps' parameter of KNeighborsClassifier must be a float in the range (0, 1). "
+                f"Got '{self.eps}' instead."
             )

@@ -27,7 +27,7 @@ class KMeans(BasePartitionalClustering):
             samples from the dataset for the initial centroids, or an array-like of shape
             `(n_clusters, n_features)` for explicit initialization.
         max_iter: Maximum number of iterations of the k-means algorithm for a single run.
-        e: Absolute tolerance in regard to the maximum distance between cluster centers
+        atol: Absolute tolerance in regard to the maximum distance between cluster centers
             of two consecutive iterations to declare convergence.
         random_state: Determines random number generation for centroid initialization.
             Pass an int to make the randomness deterministic.
@@ -46,7 +46,7 @@ class KMeans(BasePartitionalClustering):
         n_clusters: int = 8,
         init: str | NDArray[Any] | list[Any] = "random",
         max_iter: int = 300,
-        e: float = 1e-4,
+        atol: float = 1e-4,
         random_state: int | np.random.RandomState | None = None,
     ) -> None:
         super().__init__(
@@ -55,7 +55,7 @@ class KMeans(BasePartitionalClustering):
             max_iter=max_iter,
             random_state=random_state,
         )
-        self.e = e
+        self.atol = atol
 
     def _init_fit(self, X: NDArray[Any]) -> None:
         """No preliminary setup required for K-Means."""
@@ -88,10 +88,10 @@ class KMeans(BasePartitionalClustering):
         """Check if the algorithm has converged.
 
         Convergence is declared if the maximum distance between old and new
-        cluster centers is less than or equal to the absolute tolerance `e`.
+        cluster centers is less than or equal to the absolute tolerance `atol`.
         """
         max_centers_dist_diff = _tools.calc_max_zip_distance(self.cluster_centers_, old_cluster_centers)
-        return max_centers_dist_diff <= self.e
+        return max_centers_dist_diff <= self.atol
 
     def _calc_inertia(self, X: NDArray[Any]) -> float:
         """Calculate the inertia of the cluster assignments.
@@ -106,7 +106,7 @@ class KMeans(BasePartitionalClustering):
         """Validate the hyperparameters against the input data.
 
         Raises:
-            ValueError: If `e` is negative.
+            ValueError: If `atol` is negative.
         """
-        if not isinstance(self.e, numbers.Real) or self.e < 0:
-            raise ValueError(f"The 'e' parameter must be a float in the range [0, inf). Got '{self.e}'.")
+        if not isinstance(self.atol, numbers.Real) or self.atol < 0:
+            raise ValueError(f"The 'atol' parameter must be a float in the range [0, inf). Got '{self.atol}'.")
