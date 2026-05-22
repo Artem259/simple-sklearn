@@ -10,6 +10,7 @@ exclude_docs: |
 
 watch:
   - src
+  - README.md
 
 theme:
   name: material
@@ -68,7 +69,7 @@ plugins:
 
 nav:
   - About: index.md
-  - Usage examples:
+  - Usage Examples:
       - Classification: notebooks/classification.ipynb
       - Clustering: notebooks/clustering.ipynb
       - Tools: notebooks/tools.md
