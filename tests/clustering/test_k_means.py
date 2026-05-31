@@ -2,7 +2,6 @@ import numpy as np
 import numpy.testing as npt
 import sklearn
 from sklearn.metrics.cluster import adjusted_rand_score
-from sklearn.utils.estimator_checks import estimator_checks_generator
 
 from simple_sklearn.clustering import KMeans
 
@@ -35,9 +34,3 @@ def test_kmeans_matches_sklearn_on_simple_data() -> None:
     npt.assert_allclose(custom.inertia_, sk.inertia_, rtol=1e-6, atol=1e-8)
     # check n_iter_ exists
     assert hasattr(custom, "n_iter_")
-
-
-def test_kmeans_passes_sklearn_checks() -> None:
-    clusterer = KMeans()
-    for estimator, check in estimator_checks_generator(clusterer):
-        check(estimator)

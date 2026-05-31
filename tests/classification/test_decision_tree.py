@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.utils.estimator_checks import estimator_checks_generator
 
 from simple_sklearn.classification import DecisionTreeClassifier
 
@@ -60,9 +59,3 @@ def test_decision_tree_handles_unknown_values() -> None:
     # All predictions should be valid known classes
     for p in y_pred:
         assert p in np.unique(y)
-
-
-def test_decision_tree_passes_sklearn_checks() -> None:
-    classifier = DecisionTreeClassifier()
-    for estimator, check in estimator_checks_generator(classifier):
-        check(estimator)

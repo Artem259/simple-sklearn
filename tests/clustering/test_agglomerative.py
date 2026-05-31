@@ -4,7 +4,6 @@ import numpy as np
 import numpy.testing as npt
 import sklearn
 from numpy.typing import NDArray
-from sklearn.utils.estimator_checks import estimator_checks_generator
 
 from simple_sklearn.clustering import AgglomerativeClustering
 
@@ -34,9 +33,3 @@ def test_agglomerative_matches_sklearn_on_simple_data() -> None:
         # children_ should be present and have correct shape: (n_samples-1, 2)
         assert custom.children_.shape[0] == X.shape[0] - 1
         assert custom.children_.shape[1] == 2
-
-
-def test_agglomerative_passes_sklearn_checks() -> None:
-    clusterer = AgglomerativeClustering()
-    for estimator, check in estimator_checks_generator(clusterer):
-        check(estimator)

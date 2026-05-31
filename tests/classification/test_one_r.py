@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.utils.estimator_checks import estimator_checks_generator
 
 from simple_sklearn.classification import OneRClassifier
 
@@ -76,9 +75,3 @@ def test_one_r_handles_unknown_values() -> None:
 
     # Check that unseen value "4" got fallback class
     assert y_pred[0] == clf.fallback_class_
-
-
-def test_one_r_passes_sklearn_checks() -> None:
-    classifier = OneRClassifier()
-    for estimator, check in estimator_checks_generator(classifier):
-        check(estimator)

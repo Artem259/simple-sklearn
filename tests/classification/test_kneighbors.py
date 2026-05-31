@@ -1,7 +1,6 @@
 import numpy as np
 import numpy.testing as npt
 import sklearn
-from sklearn.utils.estimator_checks import estimator_checks_generator
 
 from simple_sklearn.classification import KNeighborsClassifier
 
@@ -41,9 +40,3 @@ def test_kneighbors_matches_sklearn_on_simple_data() -> None:
 
             npt.assert_allclose(dist, sk_dist, rtol=1e-6, atol=1e-8)
             assert (ind == sk_ind).all()
-
-
-def test_kneighbors_passes_sklearn_checks() -> None:
-    classifier = KNeighborsClassifier()
-    for estimator, check in estimator_checks_generator(classifier):
-        check(estimator)

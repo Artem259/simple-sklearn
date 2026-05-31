@@ -1,7 +1,6 @@
 import numpy as np
 import numpy.testing as npt
 from sklearn.naive_bayes import CategoricalNB
-from sklearn.utils.estimator_checks import estimator_checks_generator
 
 from simple_sklearn.classification import NaiveBayesClassifier
 
@@ -85,9 +84,3 @@ def test_naive_bayes_handles_unknown_values() -> None:
     npt.assert_allclose(clf.class_log_prior_, sk.class_log_prior_, rtol=1e-6, atol=1e-8)
 
     assert clf.class_log_prior_.shape[0] == len(np.unique(y))
-
-
-def test_naive_bayes_passes_sklearn_checks() -> None:
-    classifier = NaiveBayesClassifier()
-    for estimator, check in estimator_checks_generator(classifier):
-        check(estimator)

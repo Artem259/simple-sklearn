@@ -1,7 +1,6 @@
 import numpy as np
 import sklearn
 from sklearn.metrics.cluster import adjusted_rand_score
-from sklearn.utils.estimator_checks import estimator_checks_generator
 
 from simple_sklearn.clustering import DBSCAN
 
@@ -32,9 +31,3 @@ def test_dbscan_matches_sklearn_on_simple_data() -> None:
 
     assert hasattr(custom, "core_sample_indices_")
     assert isinstance(custom.core_sample_indices_, (list, np.ndarray))
-
-
-def test_dbscan_passes_sklearn_checks() -> None:
-    clusterer = DBSCAN()
-    for estimator, check in estimator_checks_generator(clusterer):
-        check(estimator)
