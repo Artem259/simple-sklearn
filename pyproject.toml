@@ -51,6 +51,12 @@ quality = [
     "pandas-stubs>=2.2.3",
     "scipy-stubs>=1.13.1",
 ]
+build = [
+    "build==1.4.0",
+    "twine==6.2.0",
+    "check-sdist==1.4.0",
+    "check-wheel-contents==0.6.3",
+]
 test = [
     "pytest>=8.4.2",
     "pytest-cov>=6.0.0",
@@ -58,9 +64,6 @@ test = [
 dev = [
     "pre-commit>=4.0.0",
     "ruff==0.14.9",
-    "build==1.4.0",
-    "twine==6.2.0",
-    "check-sdist==1.4.0",
 ]
 
 [project.urls]
@@ -83,6 +86,10 @@ git-only = [
     "Makefile",
     "mkdocs.yml",
 ]
+
+[tool.check-wheel-contents]
+toplevel = ["simple_sklearn"]
+package = ["src/simple_sklearn"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

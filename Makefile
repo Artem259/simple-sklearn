@@ -4,7 +4,7 @@
 
 install:
 	python -m pip install --upgrade pip
-	python -m pip install -e ".[docs,quality,test,dev]"
+	python -m pip install -e ".[docs,quality,build,test,dev]"
 
 setup: install
 	pre-commit install
@@ -15,6 +15,7 @@ lint:
 build:
 	python -m check_sdist --inject-junk
 	python -m build
+	python -m check_wheel_contents dist/*.whl
 	python -m twine check --strict dist/*
 
 test:
