@@ -93,7 +93,7 @@ package = ["src/simple_sklearn"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra -q --cov=simple_sklearn --cov-branch --cov-report=term-missing"
+addopts = "-ra --strict-config"
 
 [tool.coverage.paths]
 source = [

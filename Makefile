@@ -1,4 +1,4 @@
-.PHONY: install setup lint build test check docs docs-build act-push act-pr
+.PHONY: install setup lint build test test-cov test-lf check docs docs-build act-push act-pr
 
 .DEFAULT_GOAL := setup
 
@@ -19,7 +19,13 @@ build:
 	python -m twine check --strict dist/*
 
 test:
-	pytest
+	pytest -x
+
+test-cov:
+	pytest --cov=simple_sklearn --cov-branch --cov-report=term-missing
+
+test-lf:
+	pytest --lf
 
 check: lint build test
 
