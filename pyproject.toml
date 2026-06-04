@@ -81,7 +81,7 @@ where = ["src"]
 [tool.check-sdist]
 git-only = [
     ".*",
-    "data/",
+    "data/_*.csv",
     "docs/",
     "Makefile",
     "mkdocs.yml",

@@ -1,6 +1,6 @@
 # Data
 
-This directory contains the datasets used in the documentation's Usage Examples notebooks.
+This directory contains the datasets used in tests and the documentation's usage example notebooks.
 
 ---
 
@@ -8,13 +8,13 @@ This directory contains the datasets used in the documentation's Usage Examples 
 
 ### Student Performance
 
-* **File:** `student_performance.csv`
+* **File:** `_student_performance.csv`
 * **Source:** [Students Performance Dataset on Kaggle][1.1]
 * **License:** [Attribution 4.0 International (CC BY 4.0)][1.2]
 
 ### Country Data
 
-* **File:** `country_data.csv`
+* **File:** `_country_data.csv`
 * **Source:** [Unsupervised Learning on Country Data on Kaggle][2.1]
 * **License:** [MIT License][2.2]
 
