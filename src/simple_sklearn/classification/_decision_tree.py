@@ -92,16 +92,19 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         for x in X:
             curr_node = self.tree_
             while True:
-                if isinstance(curr_node, LeafNode):
-                    y_pred.append(curr_node.label)
-                    break
-                if isinstance(curr_node, SplitterNode):
-                    feat_value = x[curr_node.feat_index]
-                    if feat_value in curr_node.children:
-                        curr_node = curr_node.children[feat_value]
-                    else:
-                        y_pred.append(curr_node.majority_label)
+                match curr_node:
+                    case LeafNode():
+                        y_pred.append(curr_node.label)
                         break
+                    case SplitterNode():
+                        feat_value = x[curr_node.feat_index]
+                        if feat_value in curr_node.children:
+                            curr_node = curr_node.children[feat_value]
+                        else:
+                            y_pred.append(curr_node.majority_label)
+                            break
+                    case _:
+                        raise TypeError(f"Unknown node type encountered: {type(curr_node)}")
 
         return np.asarray(self.classes_[y_pred])
 
