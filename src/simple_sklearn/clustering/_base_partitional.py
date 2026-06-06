@@ -183,17 +183,20 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         """
         if not isinstance(self.n_clusters, int) or self.n_clusters < 1:
             raise ValueError(
-                f"The 'n_clusters' parameter must be an int in the range [1, inf). Got '{self.n_clusters}' instead."
+                f"The 'n_clusters' parameter of {type(self).__name__} must be an int in the range [1, inf). "
+                f"Got {self.n_clusters} instead."
             )
         if not isinstance(self.max_iter, int) or self.max_iter < 1:
             raise ValueError(
-                f"The 'max_iter' parameter must be an int in the range [1, inf). Got '{self.max_iter}' instead."
+                f"The 'max_iter' parameter of {type(self).__name__} must be an int in the range [1, inf). "
+                f"Got {self.max_iter} instead."
             )
 
         if isinstance(self.init, str):
             if self.init not in ("random",):
                 raise ValueError(
-                    f"The 'init' parameter must be array-like or a str among ['random']. Got '{self.init}' instead."
+                    f"The 'init' parameter of {type(self).__name__} must be array-like or a str among ['random']. "
+                    f"Got '{self.init}' instead."
                 )
         else:
             init_shape = np.asarray(self.init).shape

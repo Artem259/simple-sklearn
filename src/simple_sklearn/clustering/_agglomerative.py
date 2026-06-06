@@ -189,7 +189,7 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         """
         if not isinstance(self.n_clusters, int) or self.n_clusters < 1:
             raise ValueError(
-                f"The 'n_clusters' parameter must be an int in the range [1, inf). Got '{self.n_clusters}' instead."
+                f"The 'n_clusters' parameter must be an int in the range [1, inf). Got {self.n_clusters} instead."
             )
         if self.linkage not in ("single", "complete", "average", "ward"):
             raise ValueError(

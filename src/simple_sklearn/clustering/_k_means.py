@@ -109,4 +109,4 @@ class KMeans(BasePartitionalClustering):
             ValueError: If `atol` is negative.
         """
         if not isinstance(self.atol, numbers.Real) or self.atol < 0:
-            raise ValueError(f"The 'atol' parameter must be a float in the range [0, inf). Got '{self.atol}'.")
+            raise ValueError(f"The 'atol' parameter must be a float in the range [0, inf). Got {self.atol}.")

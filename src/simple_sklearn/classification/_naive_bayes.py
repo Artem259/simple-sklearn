@@ -177,5 +177,9 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         """
         if self.min_categories is not None:
             min_categories = np.array(self.min_categories)
+            if not np.issubdtype(min_categories.dtype, np.signedinteger):
+                raise ValueError(f"'min_categories' should have integral type. Got {min_categories.dtype} instead.")
             if min_categories.shape[0] != X.shape[1]:
-                raise ValueError(f"min_categories must have shape (n_features,), got {min_categories.shape}")
+                raise ValueError(
+                    f"The 'min_categories' parameter must have shape (n_features,), got {min_categories.shape}"
+                )

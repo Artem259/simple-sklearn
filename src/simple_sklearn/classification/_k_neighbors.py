@@ -206,15 +206,15 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         if not isinstance(self.n_neighbors, int) or self.n_neighbors < 1:
             raise ValueError(
                 f"The 'n_neighbors' parameter of KNeighborsClassifier must be an int in the range [1, inf). "
-                f"Got '{self.n_neighbors}' instead."
+                f"Got {self.n_neighbors} instead."
             )
         if self.weights not in ("distance", "distance_squared", "uniform"):
             raise ValueError(
                 f"The 'weights' parameter of KNeighborsClassifier must be a str among "
-                f"['distance', 'distance_squared', 'uniform']. Got '{self.weights}' instead."
+                f"{{'distance', 'distance_squared', 'uniform'}}. Got '{self.weights}' instead."
             )
         if not isinstance(self.eps, float) or not 0 < self.eps < 1:
             raise ValueError(
                 f"The 'eps' parameter of KNeighborsClassifier must be a float in the range (0, 1). "
-                f"Got '{self.eps}' instead."
+                f"Got {self.eps} instead."
             )
