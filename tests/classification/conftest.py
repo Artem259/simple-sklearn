@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 import pytest
@@ -7,7 +6,7 @@ from numpy.typing import NDArray
 
 
 @pytest.fixture(scope="package")
-def dataset_4f() -> tuple[NDArray[Any], NDArray[Any]]:
+def dataset_4f() -> tuple[NDArray[np.int_], NDArray[np.str_]]:
     current_dir = Path(__file__).parent
     data_path = current_dir.parent.parent / "data" / "classification_4f.csv"
 
