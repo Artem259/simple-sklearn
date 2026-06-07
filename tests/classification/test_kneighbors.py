@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -11,6 +13,7 @@ from tests.classification.testing_utils import (
 )
 from tests.testing_utils import (
     assert_attributes_match_types,
+    assert_parameter_validation_exceptions,
 )
 
 
@@ -85,3 +88,53 @@ def test_kneighbors_matches_sklearn_on_simple_data(
         dist, _ = clf.kneighbors(X_pred)
         sk_dist, _ = sk.kneighbors(X_pred)
         npt.assert_allclose(dist, sk_dist, rtol=1e-6, atol=1e-8)
+
+
+@pytest.mark.parametrize(
+    ("params", "expected_error", "match_text", "match_sklearn"),
+    [
+        # n_neighbors checks
+        ({"n_neighbors": 0}, ValueError, r"must be an int in the range \[1, inf\)\. Got 0", False),
+        ({"n_neighbors": -1}, ValueError, r"must be an int in the range \[1, inf\)\. Got -1", False),
+        ({"n_neighbors": 3.5}, ValueError, r"must be an int in the range \[1, inf\)\. Got 3\.5", False),
+        ({"n_neighbors": "a"}, ValueError, r"must be an int in the range \[1, inf\)\. Got a", False),
+        # weights checks
+        (
+            {"weights": "invalid_weight"},
+            ValueError,
+            r"must be a str among \{'distance', 'distance_squared', 'uniform'\}\. Got 'invalid_weight'",
+            False,
+        ),
+        (
+            {"weights": 123},
+            ValueError,
+            r"must be a str among \{'distance', 'distance_squared', 'uniform'\}\. Got '123'",
+            False,
+        ),
+        (
+            {"weights": None},
+            ValueError,
+            r"must be a str among \{'distance', 'distance_squared', 'uniform'\}\. Got 'None'",
+            False,
+        ),
+        # eps checks
+        ({"eps": 0.0}, ValueError, r"must be a float in the range \(0, 1\)\. Got 0\.0", False),
+        ({"eps": 1.0}, ValueError, r"must be a float in the range \(0, 1\)\. Got 1\.0", False),
+        ({"eps": -0.1}, ValueError, r"must be a float in the range \(0, 1\)\. Got -0\.1", False),
+        ({"eps": 1}, ValueError, r"must be a float in the range \(0, 1\)\. Got 1", False),
+        ({"eps": "1e-9"}, ValueError, r"must be a float in the range \(0, 1\)\. Got 1e-9", False),
+    ],
+)
+def test_kneighbors_parameter_validation_exceptions(
+    dataset_4f: tuple[NDArray[np.int_], NDArray[np.str_]],
+    params: dict[str, Any],
+    expected_error: type[Exception],
+    match_text: str,
+    match_sklearn: bool,
+) -> None:
+    X, y = dataset_4f
+
+    clf = KNeighborsClassifier(**params)
+    sk = sklearn.neighbors.KNeighborsClassifier(**params) if match_sklearn else None
+
+    assert_parameter_validation_exceptions(clf, X, y, expected_error, match_text, sk)

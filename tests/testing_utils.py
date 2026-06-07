@@ -1,6 +1,8 @@
 from typing import Any, get_args, get_origin
 
 import numpy as np
+import pytest
+from numpy.typing import NDArray
 
 
 def assert_matches_type(obj: Any, type_hint: Any) -> None:
@@ -52,3 +54,19 @@ def assert_attributes_match_types(estimator: Any, type_map: dict[str, Any]) -> N
             assert_matches_type(attr_value, expected_type)
         except AssertionError as e:
             raise AssertionError(f"Type mismatch for attribute '{attr_name}': {e}") from e
+
+
+def assert_parameter_validation_exceptions(
+    estimator: Any,
+    X: NDArray[Any],
+    y: NDArray[Any] | None,
+    expected_error: type[Exception],
+    match_text: str,
+    sk_estimator: Any = None,
+) -> None:
+    with pytest.raises(expected_error, match=match_text):
+        estimator.fit(X, y)
+
+    if sk_estimator is not None:
+        with pytest.raises(expected_error, match=match_text):
+            sk_estimator.fit(X, y)
