@@ -39,7 +39,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
     """
 
     cluster_centers_: NDArray[np.float64]
-    labels_: NDArray[np.int_]
+    labels_: NDArray[np.int64]
     n_iter_: int
     inertia_: float
     random_state_: np.random.RandomState
@@ -127,7 +127,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         pass
 
     @abstractmethod
-    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int_]:
+    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int64]:
         """Recalculate labels for each sample.
 
         Args:

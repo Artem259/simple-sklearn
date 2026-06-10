@@ -79,7 +79,7 @@ class KMeans(BasePartitionalClustering):
             ]
         )
 
-    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int_]:
+    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int64]:
         """Recalculate labels by finding the closest cluster center for each sample."""
         distances = _tools.calc_distance_matrix(X, self.cluster_centers_)
         return np.asarray(np.argmin(distances, axis=1))

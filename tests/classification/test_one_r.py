@@ -7,7 +7,7 @@ from tests.classification.testing_utils import assert_valid_classification_predi
 from tests.testing_utils import assert_attributes_match_types
 
 
-def test_one_r_fit_predict(dataset_4f: tuple[NDArray[np.int_], NDArray[np.str_]]) -> None:
+def test_one_r_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]]) -> None:
     X, y = dataset_4f
     n_features = X.shape[1]
     unique_classes = set(y)

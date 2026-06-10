@@ -45,7 +45,7 @@ class KMedoids(BasePartitionalClustering):
     """
 
     distance_matrix_: NDArray[np.float64]
-    cluster_center_indices_: NDArray[np.int_]
+    cluster_center_indices_: NDArray[np.int64]
 
     def __init__(
         self,
@@ -107,7 +107,7 @@ class KMedoids(BasePartitionalClustering):
         self.cluster_center_indices_ = np.array(new_indices)
         return np.array(new_centers)
 
-    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int_]:
+    def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int64]:
         """Recalculate labels by finding the closest medoid for each sample."""
         distances_to_medoids = self.distance_matrix_[:, self.cluster_center_indices_]
         return np.asarray(np.argmin(distances_to_medoids, axis=1))
@@ -135,7 +135,7 @@ class KMedoids(BasePartitionalClustering):
         pass
 
 
-def _convert_to_medoids(X: NDArray[Any], cluster_centers: NDArray[np.float64]) -> NDArray[np.int_]:
+def _convert_to_medoids(X: NDArray[Any], cluster_centers: NDArray[np.float64]) -> NDArray[np.int64]:
     """Map continuous coordinates to the indices of the closest actual data points.
 
     This ensures that when a continuous initialization strategy is used,

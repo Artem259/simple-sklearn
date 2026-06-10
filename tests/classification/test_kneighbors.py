@@ -27,7 +27,7 @@ from tests.testing_utils import (
     ],
 )
 def test_kneighbors_matches_sklearn_on_simple_data(
-    dataset_4f: tuple[NDArray[np.int_], NDArray[np.str_]], n_neighbors: int, weights: str, match_sklearn: bool
+    dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]], n_neighbors: int, weights: str, match_sklearn: bool
 ) -> None:
     X, y = dataset_4f
     n_samples, n_features = X.shape
@@ -49,8 +49,8 @@ def test_kneighbors_matches_sklearn_on_simple_data(
 
     expected_attributes = {
         "classes_": NDArray[np.str_],
-        "fitted_x_": NDArray[np.int_],
-        "fitted_y_": NDArray[np.int_],
+        "fitted_x_": NDArray[np.int64],
+        "fitted_y_": NDArray[np.int64],
     }
 
     clf = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights)
@@ -126,7 +126,7 @@ def test_kneighbors_matches_sklearn_on_simple_data(
     ],
 )
 def test_kneighbors_parameter_validation_exceptions(
-    dataset_4f: tuple[NDArray[np.int_], NDArray[np.str_]],
+    dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]],
     params: dict[str, Any],
     expected_error: type[Exception],
     match_text: str,

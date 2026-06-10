@@ -27,7 +27,7 @@ from tests.testing_utils import (
     ],
 )
 def test_naive_bayes_matches_sklearn_on_simple_data(
-    dataset_4f: tuple[NDArray[np.int_], NDArray[np.str_]], min_categories: Any, match_sklearn: bool
+    dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]], min_categories: Any, match_sklearn: bool
 ) -> None:
     X, y = dataset_4f
     n_features = X.shape[1]
@@ -49,7 +49,7 @@ def test_naive_bayes_matches_sklearn_on_simple_data(
     expected_attributes = {
         "classes_": NDArray[np.str_],
         "class_log_prior_": pd.Series,
-        "feature_unique_values_": list[set[np.int_]],
+        "feature_unique_values_": list[set[np.int64]],
         "feature_log_prob_": list[pd.Series],
         "feature_unknown_log_probs_": list[pd.Series],
         "num_features_": int,
@@ -122,7 +122,7 @@ def test_naive_bayes_matches_sklearn_on_simple_data(
     ],
 )
 def test_naive_bayes_parameter_validation_exceptions(
-    dataset_4f: tuple[NDArray[np.int_], NDArray[np.str_]],
+    dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]],
     params: dict[str, Any],
     expected_error: type[Exception],
     match_text: str,

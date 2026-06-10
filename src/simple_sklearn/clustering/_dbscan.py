@@ -35,10 +35,10 @@ class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
         core_sample_indices_: An array of indices identifying the core samples.
     """
 
-    labels_: NDArray[np.int_]
+    labels_: NDArray[np.int64]
     distance_matrix_: NDArray[np.float64]
     neighbors_: list[list[int]]
-    core_sample_indices_: NDArray[np.int_]
+    core_sample_indices_: NDArray[np.int64]
     _core_sample_mask: NDArray[np.bool_]
 
     def __init__(self, eps: float = 0.5, min_samples: int = 5) -> None:

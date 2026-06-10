@@ -34,8 +34,8 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         distances_: Distances between clusters in the corresponding places in `children_`.
     """
 
-    labels_: NDArray[np.int_]
-    children_: NDArray[np.int_]
+    labels_: NDArray[np.int64]
+    children_: NDArray[np.int64]
     distances_: NDArray[np.float64]
 
     def __init__(self, n_clusters: int = 2, linkage: str = "ward") -> None:
