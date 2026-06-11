@@ -118,11 +118,11 @@ def test_kneighbors_matches_sklearn_on_simple_data(
             False,
         ),
         # eps checks
-        ({"eps": 0.0}, ValueError, r"must be a float in the range \(0, 1\)\. Got 0\.0", False),
-        ({"eps": 1.0}, ValueError, r"must be a float in the range \(0, 1\)\. Got 1\.0", False),
-        ({"eps": -0.1}, ValueError, r"must be a float in the range \(0, 1\)\. Got -0\.1", False),
-        ({"eps": 1}, ValueError, r"must be a float in the range \(0, 1\)\. Got 1", False),
-        ({"eps": "1e-9"}, ValueError, r"must be a float in the range \(0, 1\)\. Got 1e-9", False),
+        ({"eps": 0.0}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got 0\.0", False),
+        ({"eps": 1.0}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got 1\.0", False),
+        ({"eps": -0.1}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got -0\.1", False),
+        ({"eps": 1}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got 1", False),
+        ({"eps": "1e-9"}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got 1e-9", False),
     ],
 )
 def test_kneighbors_parameter_validation_exceptions(

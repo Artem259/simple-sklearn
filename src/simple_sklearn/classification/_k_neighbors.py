@@ -215,6 +215,6 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
             )
         if not isinstance(self.eps, float) or not 0 < self.eps < 1:
             raise ValueError(
-                f"The 'eps' parameter of KNeighborsClassifier must be a float in the range (0, 1). "
+                f"The 'eps' parameter of KNeighborsClassifier must be a float in the range (0.0, 1). "
                 f"Got {self.eps} instead."
             )

@@ -163,7 +163,7 @@ class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
                 if `min_samples` is not a positive integer.
         """
         if not isinstance(self.eps, numbers.Real) or self.eps <= 0:
-            raise ValueError(f"The 'eps' parameter must be a float in the range (0, inf). Got {self.eps} instead.")
+            raise ValueError(f"The 'eps' parameter must be a float in the range (0.0, inf). Got {self.eps} instead.")
         if not isinstance(self.min_samples, int) or self.min_samples < 1:
             raise ValueError(
                 f"The 'min_samples' parameter must be an int in the range [1, inf). Got {self.min_samples} instead."

@@ -178,8 +178,9 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
             X: The original input data.
 
         Raises:
-            ValueError: If `n_clusters` or `max_iter` are not positive integers,
-                or if the `init` strategy or shape is invalid.
+            ValueError: If `n_clusters` or `max_iter` is not a positive integer,
+                if `n_clusters` is greater than the number of samples, or
+                if the `init` strategy or shape is invalid.
         """
         if not isinstance(self.n_clusters, int) or self.n_clusters < 1:
             raise ValueError(
@@ -191,6 +192,9 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
                 f"The 'max_iter' parameter of {type(self).__name__} must be an int in the range [1, inf). "
                 f"Got {self.max_iter} instead."
             )
+        num_samples = X.shape[0]
+        if self.n_clusters > num_samples:
+            raise ValueError(f"n_samples={num_samples} should be >= n_clusters={self.n_clusters}.")
 
         if isinstance(self.init, str):
             if self.init not in ("random",):

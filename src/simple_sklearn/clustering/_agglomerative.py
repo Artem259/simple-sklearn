@@ -54,11 +54,12 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             The fitted instance.
 
         Raises:
-            ValueError: If `n_clusters` or `linkage` parameters are invalid.
+            ValueError: If `n_clusters` or `linkage` parameters are invalid, or
+                if `n_clusters` exceeds the number of samples in `X`.
         """
         X = validate_data(self, X)
         X = np.array(X)
-        self._validate_self_params()
+        self._validate_self_params(X)
 
         num_samples = X.shape[0]
         labels = np.arange(num_samples)
@@ -180,12 +181,16 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             X=X,
         )
 
-    def _validate_self_params(self) -> None:
-        """Validate the hyperparameters.
+    def _validate_self_params(self, X: NDArray[Any]) -> None:
+        """Validate the hyperparameters against the training data.
+
+        Args:
+            X: Training instances. Array of shape `(n_samples, n_features)`.
 
         Raises:
-            ValueError: If `n_clusters` is not a positive integer or
-                if `linkage` is not one of the supported string literals.
+            ValueError: If `n_clusters` is not a positive integer,
+                if `linkage` is not one of the supported string literals, or
+                if `n_clusters` is greater than the number of samples.
         """
         if not isinstance(self.n_clusters, int) or self.n_clusters < 1:
             raise ValueError(
@@ -194,7 +199,13 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         if self.linkage not in ("single", "complete", "average", "ward"):
             raise ValueError(
                 f"The 'linkage' parameter must be a str among "
-                f"['single', 'complete', 'average', 'ward']. Got '{self.linkage}' instead."
+                f"{{'single', 'complete', 'average', 'ward'}}. Got '{self.linkage}' instead."
+            )
+        num_samples = X.shape[0]
+        if self.n_clusters > num_samples:
+            raise ValueError(
+                f"Cannot extract more clusters than samples: "
+                f"{self.n_clusters} clusters were given for a tree with {num_samples} leaves."
             )
 
 
