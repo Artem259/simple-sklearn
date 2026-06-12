@@ -65,6 +65,7 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         labels = np.arange(num_samples)
         linkage_matrix = self._init_linkage_matrix(X)
         linkage_indices = [[i, [i]] for i in range(num_samples)]
+        target_labels = labels.copy()
         children = []
         distances = []
 
@@ -74,8 +75,9 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             distances.append(distance)
 
             if i == num_samples - self.n_clusters - 1:
-                _, self.labels_ = np.unique(labels, return_inverse=True)
+                target_labels = labels.copy()
 
+        self.labels_ = np.unique(target_labels, return_inverse=True)[1]
         self.children_ = np.array(children)
         self.distances_ = np.array(distances)
         return self
