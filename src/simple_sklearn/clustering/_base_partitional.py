@@ -196,12 +196,15 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         if self.n_clusters > num_samples:
             raise ValueError(f"n_samples={num_samples} should be >= n_clusters={self.n_clusters}.")
 
+        init_value_error = ValueError(
+            f"The 'init' parameter of {type(self).__name__} must be array-like or a str among {{'random'}}. "
+            f"Got '{self.init}' instead."
+        )
         if isinstance(self.init, str):
             if self.init not in ("random",):
-                raise ValueError(
-                    f"The 'init' parameter of {type(self).__name__} must be array-like or a str among ['random']. "
-                    f"Got '{self.init}' instead."
-                )
+                raise init_value_error
+        elif not hasattr(self.init, "__iter__"):
+            raise init_value_error
         else:
             init_shape = np.asarray(self.init).shape
             expected_shape = (self.n_clusters, X.shape[1])
