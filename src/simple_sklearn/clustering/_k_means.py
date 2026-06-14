@@ -64,8 +64,8 @@ class KMeans(BasePartitionalClustering):
     def _init_cluster_centers(self, X: NDArray[Any]) -> NDArray[np.float64]:
         if isinstance(self.init, str) and self.init == "random":
             random_indices = self.random_state_.choice(X.shape[0], self.n_clusters, replace=False)
-            return np.array(X[random_indices])
-        return np.array(self.init)
+            return np.array(X[random_indices], dtype=np.float64)
+        return np.array(self.init, dtype=np.float64)
 
     def _recalc_cluster_centers(self, X: NDArray[Any]) -> NDArray[np.float64]:
         """Recalculate cluster centers based on the current labels.
@@ -82,7 +82,7 @@ class KMeans(BasePartitionalClustering):
     def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int64]:
         """Recalculate labels by finding the closest cluster center for each sample."""
         distances = _tools.calc_distance_matrix(X, self.cluster_centers_)
-        return np.asarray(np.argmin(distances, axis=1))
+        return np.asarray(np.argmin(distances, axis=1), dtype=np.int64)
 
     def _check_convergence(self, old_cluster_centers: NDArray[np.float64]) -> bool:
         """Check if the algorithm has converged.

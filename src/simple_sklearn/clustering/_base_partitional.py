@@ -206,7 +206,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         elif not hasattr(self.init, "__iter__"):
             raise init_value_error
         else:
-            init_shape = np.asarray(self.init).shape
+            init_shape = np.asarray(self.init, dtype=np.float64).shape
             expected_shape = (self.n_clusters, X.shape[1])
             if len(init_shape) != 2 or init_shape != expected_shape:
                 raise ValueError(

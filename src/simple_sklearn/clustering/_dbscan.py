@@ -106,7 +106,7 @@ class DBSCAN(ClusterMixin, BaseEstimator):  # type: ignore
         """
         num_samples = self.distance_matrix_.shape[0]
         self._core_sample_mask = np.array(
-            [len(self.neighbors_[i]) >= self.min_samples - 1 for i in range(num_samples)], dtype=bool
+            [len(self.neighbors_[i]) >= self.min_samples - 1 for i in range(num_samples)], dtype=np.bool_
         )
         self.core_sample_indices_ = np.where(self._core_sample_mask)[0]
 

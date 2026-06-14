@@ -3,14 +3,14 @@
 This module provides utility functions for calculating spatial distances.
 """
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from numpy.typing import NDArray
 from scipy.spatial import distance
 
 
-def calc_zip_distances(set1: NDArray[Any], set2: NDArray[Any]) -> list[float]:
+def calc_zip_distances(set1: NDArray[Any], set2: NDArray[Any]) -> NDArray[Any]:
     """Calculate the element-wise pairwise distances between two sets of points.
 
     Computes the Euclidean distance between each aligned pair of points
@@ -21,9 +21,10 @@ def calc_zip_distances(set1: NDArray[Any], set2: NDArray[Any]) -> list[float]:
         set2: The second array of points of shape `(n_samples, n_features)`.
 
     Returns:
-        A list of float distances corresponding to each pair of points.
+        An array of distances corresponding to each pair of points.
     """
-    return [float(distance.cdist([p1], [p2])[0][0]) for p1, p2 in zip(set1, set2, strict=True)]
+    distances = np.linalg.norm(set1 - set2, axis=1)
+    return cast(NDArray[Any], distances)
 
 
 def calc_max_zip_distance(set1: NDArray[Any], set2: NDArray[Any]) -> float:
@@ -89,6 +90,6 @@ def find_closest_point(points: NDArray[Any], target: NDArray[Any]) -> tuple[int,
         index: The integer index of the closest point in the `points` array.
         closest_point: The coordinates of the closest point itself.
     """
-    distances = distance.cdist(points, [target]).flatten()
+    distances = np.linalg.norm(points - target, axis=1)
     closest_index = int(np.argmin(distances))
     return closest_index, points[closest_index]

@@ -78,8 +78,8 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
                 target_labels = labels.copy()
 
         self.labels_ = np.unique(target_labels, return_inverse=True)[1]
-        self.children_ = np.array(children)
-        self.distances_ = np.array(distances)
+        self.children_ = np.array(children, dtype=np.int64)
+        self.distances_ = np.array(distances, dtype=np.float64)
         return self
 
     def _init_linkage_matrix(self, X: NDArray[Any]) -> NDArray[Any]:

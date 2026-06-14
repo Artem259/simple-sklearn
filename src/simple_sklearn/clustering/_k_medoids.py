@@ -74,11 +74,11 @@ class KMedoids(BasePartitionalClustering):
         if isinstance(self.init, str) and self.init == "random":
             indices = self.random_state_.choice(X.shape[0], self.n_clusters, replace=False)
         else:
-            cluster_centers = np.array(self.init)
+            cluster_centers = np.array(self.init, dtype=np.float64)
             indices = _convert_to_medoids(X, cluster_centers)
 
         self.cluster_center_indices_ = indices
-        return np.asarray(X[indices])
+        return np.asarray(X[indices], dtype=np.float64)
 
     def _recalc_cluster_centers(self, X: NDArray[Any]) -> NDArray[np.float64]:
         """Recalculate medoids by finding the point minimizing the distance sum in each cluster.
@@ -104,13 +104,13 @@ class KMedoids(BasePartitionalClustering):
             new_indices.append(best_medoid_global_index)
             new_centers.append(X[best_medoid_global_index])
 
-        self.cluster_center_indices_ = np.array(new_indices)
-        return np.array(new_centers)
+        self.cluster_center_indices_ = np.array(new_indices, dtype=np.int64)
+        return np.array(new_centers, dtype=np.float64)
 
     def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int64]:
         """Recalculate labels by finding the closest medoid for each sample."""
         distances_to_medoids = self.distance_matrix_[:, self.cluster_center_indices_]
-        return np.asarray(np.argmin(distances_to_medoids, axis=1))
+        return np.asarray(np.argmin(distances_to_medoids, axis=1), dtype=np.int64)
 
     def _check_convergence(self, old_cluster_centers: NDArray[np.float64]) -> bool:
         """Check if the algorithm has converged.
@@ -150,4 +150,4 @@ def _convert_to_medoids(X: NDArray[Any], cluster_centers: NDArray[np.float64]) -
     """
     indices_with_centers = [_tools.find_closest_point(X, center) for center in cluster_centers]
     indices, _ = zip(*indices_with_centers, strict=True)
-    return np.array(indices)
+    return np.array(indices, dtype=np.int64)
