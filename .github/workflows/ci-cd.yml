@@ -83,6 +83,7 @@ jobs:
     name: Test on ${{ matrix.os }} (Python ${{ matrix.python-version }})
     needs: build-check
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -93,6 +94,7 @@ jobs:
             python-version: "3.13"
           - os: macos-latest
             python-version: "3.13"
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4

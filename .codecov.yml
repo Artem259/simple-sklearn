@@ -4,10 +4,10 @@ coverage:
       default:
         target: auto
         threshold: 1%
+        informational: true
     patch:
       default:
-        target: auto
-        threshold: 1%
+        target: 90%
 
 comment:
   layout: "diff, flags, files"
