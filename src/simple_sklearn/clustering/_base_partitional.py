@@ -100,7 +100,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         Args:
             X: The original input data.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _init_cluster_centers(self, X: NDArray[Any]) -> NDArray[np.float64]:
@@ -112,7 +112,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         Returns:
             An array containing the initial cluster centers.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _recalc_cluster_centers(self, X: NDArray[Any]) -> NDArray[np.float64]:
@@ -124,7 +124,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         Returns:
             An array containing the newly computed cluster centers.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _recalc_labels(self, X: NDArray[Any]) -> NDArray[np.int64]:
@@ -136,7 +136,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         Returns:
             An array of new cluster labels.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _check_convergence(self, old_cluster_centers: NDArray[np.float64]) -> bool:
@@ -148,7 +148,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         Returns:
             True if the model has converged, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _calc_inertia(self, X: NDArray[Any]) -> float:
@@ -160,7 +160,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         Returns:
             The calculated inertia value.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _validate_self_params(self, X: NDArray[Any]) -> None:
@@ -169,7 +169,7 @@ class BasePartitionalClustering(ClusterMixin, BaseEstimator, ABC):  # type: igno
         Args:
             X: The original input data.
         """
-        pass
+        raise NotImplementedError
 
     def _validate_base_params(self, X: NDArray[Any]) -> None:
         """Validate the common hyperparameters against the input data.

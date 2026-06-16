@@ -102,6 +102,13 @@ source = [
     "*\\site-packages\\simple_sklearn"
 ]
 
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "pass"
+]
+
 [tool.coverage.run]
 omit = [
     "src/simple_sklearn/_version.py",
