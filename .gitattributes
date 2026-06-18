@@ -8,7 +8,8 @@ Makefile text eol=lf
 
 # Archive exports
 .* export-ignore
+.github/** export-ignore
 data/_*.csv export-ignore
-docs/ export-ignore
+docs/** export-ignore
 Makefile export-ignore
 mkdocs.yml export-ignore

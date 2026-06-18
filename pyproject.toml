@@ -82,7 +82,7 @@ where = ["src"]
 git-only = [
     ".*",
     "data/_*.csv",
-    "docs/",
+    "docs/**",
     "Makefile",
     "mkdocs.yml",
 ]
