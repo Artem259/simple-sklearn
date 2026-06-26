@@ -13,3 +13,4 @@ data/_*.csv export-ignore
 docs/** export-ignore
 Makefile export-ignore
 mkdocs.yml export-ignore
+release-please-config.json export-ignore

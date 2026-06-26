@@ -85,6 +85,7 @@ git-only = [
     "docs/**",
     "Makefile",
     "mkdocs.yml",
+    "release-please-config.json",
 ]
 
 [tool.check-wheel-contents]
