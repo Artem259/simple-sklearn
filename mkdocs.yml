@@ -11,13 +11,15 @@ exclude_docs: |
 watch:
   - src
   - README.md
+  - CONTRIBUTING.md
+  - CHANGELOG.md
+  - LICENSE
 
 theme:
   name: material
   features:
     - navigation.sections
     - navigation.top
-    - navigation.expand
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -87,6 +89,10 @@ nav:
           - K-Medoids: reference/clustering/k_medoids.md
           - DBSCAN: reference/clustering/dbscan.md
           - Agglomerative: reference/clustering/agglomerative.md
+  - Extras:
+      - Contributing: CONTRIBUTING.md
+      - Changelog: CHANGELOG.md
+      - License: LICENSE.md
 
 markdown_extensions:
   - admonition
