@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [
   { name="Artem Poliakov", email="artem4250@gmail.com" },
 ]
-description = ""  # TODO
+description = "Pythonic machine learning algorithms built for educational transparency and scikit-learn compatibility"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]

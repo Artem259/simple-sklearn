@@ -1,6 +1,6 @@
 site_name: simple-sklearn
 site_url: !ENV [MKDOCS_SITE_URL, ""]
-site_description: ToDo  # TODO
+site_description: Pythonic machine learning algorithms built for educational transparency and scikit-learn compatibility
 site_author: Artem Poliakov
 repo_url: https://github.com/Artem259/simple-sklearn
 repo_name: Artem259/simple-sklearn
