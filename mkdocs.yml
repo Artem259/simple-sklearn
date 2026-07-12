@@ -90,9 +90,9 @@ nav:
           - DBSCAN: reference/clustering/dbscan.md
           - Agglomerative: reference/clustering/agglomerative.md
   - Extras:
-      - Contributing: CONTRIBUTING.md
-      - Changelog: CHANGELOG.md
-      - License: LICENSE.md
+      - Contributing: package-contributing.md
+      - Changelog: package-changelog.md
+      - License: package-license.md
 
 markdown_extensions:
   - admonition

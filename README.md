@@ -1,11 +1,11 @@
 # simple-sklearn
 
-[![CI/CD](https://github.com/Artem259/simple-sklearn/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Artem259/simple-sklearn/actions/workflows/ci-cd.yml)
-[![codecov](https://codecov.io/gh/Artem259/simple-sklearn/graph/badge.svg)](https://codecov.io/gh/Artem259/simple-sklearn)
-[![PyPI version](https://badge.fury.io/py/simple-sklearn.svg)](https://pypi.org/p/simple-sklearn)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Docs](https://img.shields.io/badge/docs-GitHub_Pages-blue.svg)](https://Artem259.github.io/simple-sklearn)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI/CD](https://github.com/Artem259/simple-sklearn/actions/workflows/ci-cd.yml/badge.svg)][ci-cd-url]
+[![codecov](https://codecov.io/gh/Artem259/simple-sklearn/graph/badge.svg)][codecov-url]
+[![PyPI version](https://badge.fury.io/py/simple-sklearn.svg)][pypi-url]
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)][python-url]
+[![Docs](https://img.shields.io/badge/docs-GitHub_Pages-blue.svg)][docs-url]
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)][license-url]
 
 **simple-sklearn** is a Python package designed to provide clear, readable, and highly pythonic implementations of
 fundamental machine learning algorithms. Abstracting away from complex low-level optimizations, this library
@@ -108,13 +108,13 @@ print(f"Cluster centers: \n{clusterer.cluster_centers_}")  # Output: [[0.15, 0.1
 
 Detailed API references, algorithm details, and Jupyter Notebook usage examples are available on the library website:
 
-**[Artem259.github.io/simple-sklearn](https://Artem259.github.io/simple-sklearn)**
+**[Artem259.github.io/simple-sklearn][docs-url]**
 
 ---
 
 ## Development & Contributing
 
-Pull requests are welcome! If you'd like to contribute, please read the [Contributing Guide](CONTRIBUTING.md).
+Pull requests are welcome! If you'd like to contribute, please read the [Contributing Guide][contrib-url].
 
 ---
 
@@ -134,4 +134,12 @@ Future development focuses on:
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License][license-url].
+
+[ci-cd-url]: https://github.com/Artem259/simple-sklearn/actions/workflows/ci-cd.yml
+[codecov-url]: https://codecov.io/gh/Artem259/simple-sklearn
+[pypi-url]: https://pypi.org/p/simple-sklearn
+[python-url]: https://www.python.org/downloads/
+[docs-url]: https://Artem259.github.io/simple-sklearn
+[license-url]: https://github.com/Artem259/simple-sklearn/blob/main/LICENSE
+[contrib-url]: https://github.com/Artem259/simple-sklearn/blob/main/CONTRIBUTING.md
