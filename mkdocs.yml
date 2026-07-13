@@ -1,0 +1,102 @@
+site_name: simple-sklearn
+site_url: !ENV [MKDOCS_SITE_URL, ""]
+site_description: Pythonic machine learning algorithms built for educational transparency and scikit-learn compatibility
+site_author: Artem Poliakov
+repo_url: https://github.com/Artem259/simple-sklearn
+repo_name: Artem259/simple-sklearn
+
+exclude_docs: |
+  notebooks/tools/
+
+watch:
+  - src
+  - README.md
+  - CONTRIBUTING.md
+  - CHANGELOG.md
+  - LICENSE
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      execute: !ENV [EXECUTE_NOTEBOOKS, true]
+      allow_errors: false
+      ignore_h1_titles: true
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ src ]
+          inventories:
+            - https://docs.python.org/3/objects.inv
+            - https://scikit-learn.org/stable/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+            - https://pandas.pydata.org/docs/objects.inv
+          options:
+            docstring_style: google
+            show_bases: true
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_source: true
+            separate_signature: true
+            show_signature_annotations: true
+            inherited_members: true
+            filters:
+              - "!^_"
+
+nav:
+  - About: index.md
+  - Usage Examples:
+      - Classification: notebooks/classification.ipynb
+      - Clustering: notebooks/clustering.ipynb
+      - Tools: notebooks/tools.md
+  - API Reference:
+      - Overview: reference/index.md
+      - Classification:
+          - Overview: reference/classification/index.md
+          - One Rule: reference/classification/one_r.md
+          - Naive Bayes: reference/classification/naive_bayes.md
+          - K-Nearest Neighbors: reference/classification/k_neighbors.md
+          - Decision Tree: reference/classification/decision_tree.md
+      - Clustering:
+          - Overview: reference/clustering/index.md
+          - K-Means: reference/clustering/k_means.md
+          - K-Medoids: reference/clustering/k_medoids.md
+          - DBSCAN: reference/clustering/dbscan.md
+          - Agglomerative: reference/clustering/agglomerative.md
+  - Extras:
+      - Contributing: package-contributing.md
+      - Changelog: package-changelog.md
+      - License: package-license.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: .

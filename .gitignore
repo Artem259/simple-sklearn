@@ -10,7 +10,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Exclude Jupyter Notebook checkpoints
+# Exclude documentation artifacts
+/.cache/
+/site/
 .ipynb_checkpoints/
 
 # Exclude build artifacts

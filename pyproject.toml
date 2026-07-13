@@ -8,50 +8,66 @@ dynamic = ["version"]
 authors = [
   { name="Artem Poliakov", email="artem4250@gmail.com" },
 ]
-description = ""  # TODO
+description = "Pythonic machine learning algorithms built for educational transparency and scikit-learn compatibility"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
 ]
 dependencies = [
     "scikit-learn>=1.6.1",
     "numpy>=1.26",
     "pandas>=2.2.3",
     "scipy>=1.13.1",
+    "typing-extensions>=4.1.0, <5.0",
 ]
 
 [project.optional-dependencies]
-jupyter = [
+docs = [
     "notebook>=7.3.2",
     "matplotlib>=3.9.4",
     "seaborn>=0.13.2",
+    "mkdocs>=1.6.1,<2.0",
+    "mkdocs-material>=9.7.5",
+    "mkdocs-jupyter>=0.25.1",
+    "mkdocstrings-python>=2.0.3",
 ]
 quality = [
     "mypy>=1.19.1",
     "pandas-stubs>=2.2.3",
     "scipy-stubs>=1.13.1",
-    "pre-commit>=4.0.0",
+]
+build = [
+    "build==1.4.0",
+    "twine==6.2.0",
+    "check-sdist==1.4.0",
+    "check-wheel-contents==0.6.3",
 ]
 test = [
     "pytest>=8.4.2",
     "pytest-cov>=6.0.0",
 ]
 dev = [
+    "pre-commit>=4.0.0",
     "ruff==0.14.9",
-    "build==1.4.0",
-    "twine==6.2.0",
-    "check-sdist==1.4.0",
 ]
 
 [project.urls]
+Homepage = "https://Artem259.github.io/simple-sklearn"
 Repository = "https://github.com/Artem259/simple-sklearn"
 
 [tool.setuptools_scm]
@@ -64,24 +80,34 @@ where = ["src"]
 
 [tool.check-sdist]
 git-only = [
-    "data/**",
+    ".*",
+    "data/_*.csv",
     "docs/**",
-    ".gitattributes",
-    ".gitignore",
-    ".yamllint.yaml",
     "Makefile",
+    "mkdocs.yml",
+    "release-please-config.json",
 ]
-default-ignore = true
+
+[tool.check-wheel-contents]
+toplevel = ["simple_sklearn"]
+package = ["src/simple_sklearn"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra -q --cov=simple_sklearn --cov-branch --cov-report=term-missing"
+addopts = "-ra --strict-config"
 
 [tool.coverage.paths]
 source = [
     "src/simple_sklearn",
     "*/site-packages/simple_sklearn",
     "*\\site-packages\\simple_sklearn"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "pass"
 ]
 
 [tool.coverage.run]

@@ -9,12 +9,19 @@ from simple_sklearn.classification import (
     NaiveBayesClassifier,
     OneRClassifier,
 )
-from simple_sklearn.classification.tree_structure import DecisionTreeNode, LeafNode, SplitterNode
+from simple_sklearn.classification.tree_structure import (
+    DecisionTreeNode,
+    LeafNode,
+    SplitterNode,
+)
 
 
 def one_r_classifier_info(clf: OneRClassifier) -> None:
     for rule in clf.prediction_rules_.items():
-        print(f"x[{clf.best_feature_index_}] == {rule[0]}: y = {clf.classes_[rule[1]]}")
+        print(
+            f"x[{clf.best_feature_index_}] == {rule[0]}: "
+            f"y = {clf.classes_[rule[1]]}"
+        )
 
 
 def naive_bayes_classifier_info(clf: NaiveBayesClassifier) -> None:
@@ -28,7 +35,9 @@ def naive_bayes_classifier_info(clf: NaiveBayesClassifier) -> None:
         print(*value, "\n")
 
 
-def sklearn_categorical_nb_info(clf: sklearn.naive_bayes.CategoricalNB) -> None:
+def sklearn_categorical_nb_info(
+    clf: sklearn.naive_bayes.CategoricalNB,
+) -> None:
     info: dict[str, Iterable[Any]] = {
         "class_log_prior_": clf.class_log_prior_,
         "feature_log_prob_": clf.feature_log_prob_,
@@ -38,8 +47,15 @@ def sklearn_categorical_nb_info(clf: sklearn.naive_bayes.CategoricalNB) -> None:
         print(*value, "\n")
 
 
-def decision_tree_classifier_info(clf: DecisionTreeClassifier) -> None:
-    def display_tree(node: DecisionTreeNode, prefix: str = "", is_last: bool = True, is_root: bool = False) -> None:
+def decision_tree_classifier_info(
+    clf: DecisionTreeClassifier,
+) -> None:
+    def display_tree(
+        node: DecisionTreeNode,
+        prefix: str = "",
+        is_last: bool = True,
+        is_root: bool = False,
+    ) -> None:
         connector = ""
         new_prefix = ""
 
@@ -50,19 +66,25 @@ def decision_tree_classifier_info(clf: DecisionTreeClassifier) -> None:
         if isinstance(node, LeafNode):
             print(prefix + connector + f"Label: {node.label}")
         if isinstance(node, SplitterNode):
-            print(prefix + connector + f"Feature[{node.feat_index + 1}]")
+            print(
+                prefix + connector + f"Feature[{node.feat_index + 1}]"
+            )
 
             children_items = list(node.children.items())
             for i, (feat_value, child) in enumerate(children_items):
                 is_last_child = i == len(children_items) - 1
                 print(new_prefix + f"({feat_value})")
-                display_tree(child, prefix=new_prefix, is_last=is_last_child)
+                display_tree(
+                    child, prefix=new_prefix, is_last=is_last_child
+                )
 
     display_tree(clf.tree_)
 
 
 def k_neighbors_classifier_info(
-    clf: KNeighborsClassifier | sklearn.neighbors.KNeighborsClassifier, X_pred: Any
+    clf: KNeighborsClassifier
+    | sklearn.neighbors.KNeighborsClassifier,
+    X_pred: Any,
 ) -> None:
     neigh_dist, neigh_ind = clf.kneighbors(X_pred)
     info: dict[str, Iterable[Any]] = {

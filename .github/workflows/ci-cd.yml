@@ -7,6 +7,11 @@ on:
     branches: [ "main" ]
   release:
     types: [ published ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
@@ -15,6 +20,9 @@ jobs:
   quality:
     name: Code Quality & Type Check
     runs-on: ubuntu-latest
+    if: |
+      github.event_name != 'push' ||
+      github.actor != 'simple-sklearn-releaser[bot]'
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -31,10 +39,12 @@ jobs:
           python -m pip install -e ".[quality,test]"
 
       - name: Run pre-commit
-        run: pre-commit run --all-files
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
 
-  build-check:
-    name: Verify Build
+  build:
+    name: Build Package
     needs: quality
     runs-on: ubuntu-latest
     steps:
@@ -52,13 +62,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build==1.4.0 twine==6.2.0 check-sdist==1.4.0
+          python -m pip install ".[build]"
 
       - name: Verify sdist contents
         run: python -m check_sdist --inject-junk
 
-      - name: Build package
+      - name: Build sdist and wheel
         run: python -m build
+
+      - name: Verify wheel contents
+        run: python -m check_wheel_contents dist/*.whl
 
       - name: Validate metadata with Twine
         run: python -m twine check --strict dist/*
@@ -72,13 +85,20 @@ jobs:
 
   tests:
     name: Test on ${{ matrix.os }} (Python ${{ matrix.python-version }})
-    needs: build-check
+    needs: build
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        python-version: [ "3.10", "3.13" ]
+        os: [ ubuntu-latest ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+        include:
+          - os: windows-latest
+            python-version: "3.13"
+          - os: macos-latest
+            python-version: "3.13"
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -97,7 +117,7 @@ jobs:
           name: package-dist
           path: dist/
 
-      - name: Install dependencies and built package
+      - name: Install built wheel and test dependencies
         shell: bash
         run: |
           python -m pip install --upgrade pip
@@ -105,31 +125,99 @@ jobs:
           python -m pip install "${WHEEL[0]}[test]"
 
       - name: Run tests with Pytest
-        run: python -m pytest --junitxml=junit.xml --cov-report=xml -o junit_family=legacy
+        shell: bash
+        run: |
+          python -m pytest \
+            --cov=simple_sklearn \
+            --cov-branch \
+            --cov-report=xml \
+            --junitxml=junit.xml \
+            -o junit_family=legacy
 
       - name: Upload coverage to Codecov
-        if: ${{ !cancelled() && !env.ACT }}
+        if: ${{ !cancelled() && github.event_name != 'workflow_dispatch' && !env.ACT }}
         uses: codecov/codecov-action@v5
         with:
+          report_type: coverage
           files: ./coverage.xml
-          flags: ${{ matrix.os }}-py${{ matrix.python-version }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload test results to Codecov
-        if: ${{ !cancelled() && !env.ACT }}
+        if: ${{ !cancelled() && github.event_name != 'workflow_dispatch' && !env.ACT }}
         uses: codecov/codecov-action@v5
         with:
           report_type: test_results
           files: ./junit.xml
-          flags: ${{ matrix.os }}-py${{ matrix.python-version }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  tests-passed:
+    name: All Tests Passed
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Success
+        run: echo "All matrix tests passed successfully."
+
+  docs-build:
+    name: Build Documentation
+    needs: quality
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pages: read
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: 'pip'
+
+      - name: Configure GitHub Pages
+        if: ${{ !env.ACT }}
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[docs]"
+
+      - name: Build MkDocs
+        run: mkdocs build --strict
+        env:
+          MKDOCS_SITE_URL: ${{ steps.pages.outputs.base_url }}
+
+      - name: Upload docs HTML artifact
+        if: |
+          (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+          github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-html
+          path: site/
+          retention-days: 7
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/
+          retention-days: 7
 
   testpypi-publish:
     name: Publish to TestPyPI
     needs: tests
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     environment:
@@ -175,3 +263,23 @@ jobs:
       - name: Publish package distributions to PyPI
         if: ${{ !env.ACT }}
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
+
+  docs-publish:
+    name: Publish to GitHub Pages
+    needs: [ docs-build, pypi-publish ]
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Deploy to GitHub Pages
+        if: ${{ !env.ACT }}
+        id: deployment
+        uses: actions/deploy-pages@v4

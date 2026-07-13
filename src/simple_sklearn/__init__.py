@@ -1,3 +1,19 @@
+"""Simple implementations of standard machine learning algorithms.
+
+This library provides implementations of various standard machine learning models.
+Designed to integrate seamlessly with scikit-learn's
+[estimator API](https://scikit-learn.org/stable/developers/develop.html),
+all estimators in this package inherit from
+[`sklearn.base.BaseEstimator`][] and the appropriate mixins
+([`ClassifierMixin`][sklearn.base.ClassifierMixin] or [`ClusterMixin`][sklearn.base.ClusterMixin]).
+
+This package is divided into two primary subpackages:
+ - [`classification`][simple_sklearn.classification]:
+    Supervised machine learning algorithms for classification tasks.
+ - [`clustering`][simple_sklearn.clustering]:
+    Unsupervised machine learning algorithms for clustering tasks.
+"""
+
 from . import classification, clustering
 
 try:

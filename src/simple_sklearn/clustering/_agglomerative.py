@@ -1,3 +1,8 @@
+"""Agglomerative Clustering.
+
+This module provides the `AgglomerativeClustering` class.
+"""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -5,25 +10,62 @@ import numpy as np
 from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import validate_data
+from typing_extensions import Self
 
 from . import _tools
 
 
 class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
-    def __init__(self, n_clusters: int = 2, linkage: str = "ward"):
+    """Perform hierarchical agglomerative clustering.
+
+    Recursively merges the pair of clusters that minimally increases a given
+    linkage distance.
+
+    Args:
+        n_clusters: The number of clusters to find.
+        linkage: Which linkage criterion to use.
+            The linkage criterion determines which distance to use between sets of observation.
+            Must be one of "ward", "complete", "average", or "single".
+
+    Attributes:
+        labels_: Cluster labels for each point.
+        children_:
+            An array of shape `(n_samples - 1, 2)` representing the children of each non-leaf cluster.
+        distances_: Distances between clusters in the corresponding places in `children_`.
+    """
+
+    labels_: NDArray[np.int64]
+    children_: NDArray[np.int64]
+    distances_: NDArray[np.float64]
+
+    def __init__(self, n_clusters: int = 2, linkage: str = "ward") -> None:
         super().__init__()
         self.n_clusters = n_clusters
         self.linkage = linkage
 
-    def fit(self, X: Any, y: Any = None) -> "AgglomerativeClustering":
-        self.__validate_params()
+    def fit(self, X: Any, y: Any = None) -> Self:
+        """Fit the agglomerative clustering model.
+
+        Args:
+            X: Training instances to cluster. Can be an array-like of shape `(n_samples, n_features)`.
+            y: Ignored. Present here for API consistency by convention.
+
+        Returns:
+            The fitted instance.
+
+        Raises:
+            ValueError: If `n_clusters` or `linkage` parameters are invalid, or
+                if `n_clusters` exceeds the number of samples in `X`.
+        """
         X = validate_data(self, X)
         X = np.array(X)
+        self._validate_self_params(X)
 
         num_samples = X.shape[0]
         labels = np.arange(num_samples)
         linkage_matrix = self._init_linkage_matrix(X)
         linkage_indices = [[i, [i]] for i in range(num_samples)]
+        target_labels = labels.copy()
         children = []
         distances = []
 
@@ -33,13 +75,22 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             distances.append(distance)
 
             if i == num_samples - self.n_clusters - 1:
-                _, self.labels_ = np.unique(labels, return_inverse=True)
+                target_labels = labels.copy()
 
-        self.children_ = np.array(children)
-        self.distances_ = np.array(distances)
+        self.labels_ = np.unique(target_labels, return_inverse=True)[1]
+        self.children_ = np.array(children, dtype=np.int64)
+        self.distances_ = np.array(distances, dtype=np.float64)
         return self
 
     def _init_linkage_matrix(self, X: NDArray[Any]) -> NDArray[Any]:
+        """Initialize the distance matrix.
+
+        Args:
+            X: The original input data.
+
+        Returns:
+            The initial distance matrix with diagonals set to infinity.
+        """
         linkage_matrix = _tools.calc_distance_matrix(X, X)
         np.fill_diagonal(linkage_matrix, np.inf)
         return linkage_matrix
@@ -47,6 +98,19 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
     def _merge_clusters_iter(
         self, X: NDArray[Any], labels: NDArray[Any], linkage_matrix: NDArray[Any], linkage_indices: list[list[Any]]
     ) -> tuple[list[int], float, NDArray[Any]]:
+        """Perform a single iteration of merging the two closest clusters.
+
+        Args:
+            X: The original input data.
+            labels: The current cluster assignments for each sample.
+            linkage_matrix: The current matrix of distances between clusters.
+            linkage_indices: A mapping of matrix indices to original sample indices.
+
+        Returns:
+            child: A list of the two indices that were merged.
+            distance: The computed distance between the merged clusters.
+            linkage_matrix: The updated distance matrix.
+        """
         unraveled = np.unravel_index(np.argmin(linkage_matrix), linkage_matrix.shape)
         lm_min_index = tuple(int(idx) for idx in sorted(unraveled))
         index1, indices1 = linkage_indices[lm_min_index[0]]
@@ -89,6 +153,21 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         linkage_indices: list[list[Any]],
         X: NDArray[Any],
     ) -> float:
+        """Calculate the distance between a target cluster and two newly merged clusters.
+
+        Dispatches the calculation to the specific function based on `self.linkage`.
+
+        Args:
+            i: Index of the target cluster.
+            i_merged_1: Index of the first merged cluster.
+            i_merged_2: Index of the second merged cluster.
+            linkage_matrix: The current distance matrix.
+            linkage_indices: The current indices mapping.
+            X: The original input data.
+
+        Returns:
+            The calculated distance according to the specified linkage method.
+        """
         linkage_methods: dict[str, Callable[..., float]] = {
             "single": _single_clusters_distance,
             "complete": _complete_clusters_distance,
@@ -104,15 +183,31 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             X=X,
         )
 
-    def __validate_params(self) -> None:
+    def _validate_self_params(self, X: NDArray[Any]) -> None:
+        """Validate the hyperparameters against the training data.
+
+        Args:
+            X: Training instances. Array of shape `(n_samples, n_features)`.
+
+        Raises:
+            ValueError: If `n_clusters` is not a positive integer,
+                if `linkage` is not one of the supported string literals, or
+                if `n_clusters` is greater than the number of samples.
+        """
         if not isinstance(self.n_clusters, int) or self.n_clusters < 1:
             raise ValueError(
-                f"The 'n_clusters' parameter must be an int in the range [1, inf). Got '{self.n_clusters}' instead."
+                f"The 'n_clusters' parameter must be an int in the range [1, inf). Got {self.n_clusters} instead."
             )
         if self.linkage not in ("single", "complete", "average", "ward"):
             raise ValueError(
                 f"The 'linkage' parameter must be a str among "
-                f"['single', 'complete', 'average', 'ward']. Got '{self.linkage}' instead."
+                f"{{'single', 'complete', 'average', 'ward'}}. Got '{self.linkage}' instead."
+            )
+        num_samples = X.shape[0]
+        if self.n_clusters > num_samples:
+            raise ValueError(
+                f"Cannot extract more clusters than samples: "
+                f"{self.n_clusters} clusters were given for a tree with {num_samples} leaves."
             )
 
 
