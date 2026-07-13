@@ -38,14 +38,20 @@ docs-build:
 	python -m http.server 8000 --bind 127.0.0.1 --directory site
 
 ACT_BASE := act -P ubuntu-latest=catthehacker/ubuntu:act-latest \
+                 --strict \
+                 --rm \
+                 --no-cache-server \
                  --matrix os:ubuntu-latest \
                  --artifact-server-path ./act-artifacts \
-                 --defaultbranch main \
-                 --env GITHUB_REF=refs/heads/main \
-                 --env GITHUB_BASE_REF=main
+                 --defaultbranch main
 
 act-push:
-	$(ACT_BASE) push
+	$(ACT_BASE) push \
+		--env GITHUB_REF=refs/heads/main \
+		--env GITHUB_BASE_REF=main
 
 act-pr:
-	$(ACT_BASE) pull_request
+	$(ACT_BASE) pull_request \
+		--env GITHUB_REF=refs/pull/1/merge \
+		--env GITHUB_BASE_REF=main \
+		--env GITHUB_HEAD_REF=my-feature-branch

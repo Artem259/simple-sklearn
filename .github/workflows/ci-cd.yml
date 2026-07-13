@@ -125,6 +125,7 @@ jobs:
           python -m pip install "${WHEEL[0]}[test]"
 
       - name: Run tests with Pytest
+        shell: bash
         run: |
           python -m pytest \
             --cov=simple_sklearn \
