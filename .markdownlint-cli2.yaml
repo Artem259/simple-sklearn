@@ -1,0 +1,21 @@
+config:
+  line-length:
+    line_length: 120
+
+overrides:
+  - filter:
+      - "docs/**/*.md"
+    combine: merge
+    config:
+      first-line-h1: false
+
+  - filter:
+      - "CHANGELOG.md"
+    combine: merge
+    config:
+      no-duplicate-heading: false
+      no-multiple-blanks:
+        maximum: 2
+
+noBanner: true
+noProgress: true
