@@ -41,6 +41,7 @@ ACT_BASE := act -P ubuntu-latest=catthehacker/ubuntu:act-latest \
                  --strict \
                  --rm \
                  --no-cache-server \
+                 --workflows .github/workflows/ci-cd.yml \
                  --matrix os:ubuntu-latest \
                  --artifact-server-path ./act-artifacts \
                  --defaultbranch main
