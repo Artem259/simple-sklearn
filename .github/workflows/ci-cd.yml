@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event_name != 'push' ||
-      github.actor != 'simple-sklearn-releaser[bot]'
+      !startsWith(github.event.head_commit.message, 'chore(main): release')
     steps:
       - name: Check out code
         uses: actions/checkout@v4
