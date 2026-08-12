@@ -63,18 +63,23 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
 
         num_samples = X.shape[0]
         labels = np.arange(num_samples)
-        linkage_matrix = self._init_linkage_matrix(X)
-        linkage_indices = [[i, [i]] for i in range(num_samples)]
+        self._init_linkage_matrix(X)
+        self._linkage_method = _LINKAGE_METHODS[self.linkage]
+        self._cluster_to_index = np.arange(2 * num_samples - 1)
+        self._index_to_cluster = np.arange(num_samples)
+        self._cluster_size = np.ones(num_samples, dtype=np.int64)
         target_labels = labels.copy()
         children = []
         distances = []
 
-        for i in range(num_samples - 1):
-            child, distance, linkage_matrix = self._merge_clusters_iter(X, labels, linkage_matrix, linkage_indices)
+        num_clusters = num_samples
+        for _ in range(num_samples - 1):
+            child, distance = self._merge_clusters_iter(labels, num_clusters)
             children.append(child)
             distances.append(distance)
 
-            if i == num_samples - self.n_clusters - 1:
+            num_clusters -= 1
+            if num_clusters == self.n_clusters:
                 target_labels = labels.copy()
 
         self.labels_ = np.unique(target_labels, return_inverse=True)[1]
@@ -82,106 +87,70 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
         self.distances_ = np.array(distances, dtype=np.float64)
         return self
 
-    def _init_linkage_matrix(self, X: NDArray[Any]) -> NDArray[Any]:
+    def _init_linkage_matrix(self, X: NDArray[Any]) -> None:
         """Initialize the distance matrix.
+
+        Computes the initial distance matrix with its diagonal set to infinity.
+        The result is stored in the `_linkage_matrix` attribute.
 
         Args:
             X: The original input data.
-
-        Returns:
-            The initial distance matrix with diagonals set to infinity.
         """
         linkage_matrix = _tools.calc_distance_matrix(X, X)
         np.fill_diagonal(linkage_matrix, np.inf)
-        return linkage_matrix
+        self._linkage_matrix = linkage_matrix
 
-    def _merge_clusters_iter(
-        self, X: NDArray[Any], labels: NDArray[Any], linkage_matrix: NDArray[Any], linkage_indices: list[list[Any]]
-    ) -> tuple[list[int], float, NDArray[Any]]:
+    def _merge_clusters_iter(self, labels: NDArray[Any], num_clusters: int) -> tuple[list[int], float]:
         """Perform a single iteration of merging the two closest clusters.
 
+        Finds the minimum distance in the active portion of the linkage matrix,
+        updates the active matrix in-place with the new distances, and maintains
+        the mappings between matrix indices and cluster IDs.
+
         Args:
-            X: The original input data.
-            labels: The current cluster assignments for each sample.
-            linkage_matrix: The current matrix of distances between clusters.
-            linkage_indices: A mapping of matrix indices to original sample indices.
+            labels: The current cluster assignments for each sample. Note that
+                this array is modified in-place to reflect the new cluster assignments.
+            num_clusters: The number of currently active clusters before the merge.
 
         Returns:
-            child: A list of the two indices that were merged.
+            child: A list of the two cluster IDs that were merged.
             distance: The computed distance between the merged clusters.
-            linkage_matrix: The updated distance matrix.
         """
-        unraveled = np.unravel_index(np.argmin(linkage_matrix), linkage_matrix.shape)
-        lm_min_index = tuple(int(idx) for idx in sorted(unraveled))
-        index1, indices1 = linkage_indices[lm_min_index[0]]
-        index2, indices2 = linkage_indices[lm_min_index[1]]
-        child = [index1, index2]
-        distance = linkage_matrix[lm_min_index]
+        active_matrix = self._linkage_matrix[:num_clusters, :num_clusters]
+        unraveled = np.unravel_index(np.argmin(active_matrix), active_matrix.shape)
+        index1, index2 = merged_indices = [int(unraveled[0]), int(unraveled[1])]
+        distance = float(self._linkage_matrix[tuple(merged_indices)])
+        child = [int(self._index_to_cluster[index1]), int(self._index_to_cluster[index2])]
 
-        size = linkage_matrix.shape[0]
-        new_index = int(max(labels)) + 1
-        new_indices = indices1 + indices2
-        new_lm_array = np.array(
-            [
-                self._calc_clusters_distance(i, lm_min_index[0], lm_min_index[1], linkage_matrix, linkage_indices, X)
-                if i != size
-                else np.inf
-                for i in range(size + 1)
-                if i not in lm_min_index
-            ]
+        new_cluster = 2 * len(labels) - num_clusters
+        new_lm_array = self._linkage_method(
+            merged_indices=merged_indices,
+            cluster_size=self._cluster_size[:num_clusters],
+            linkage_matrix=active_matrix,
         )
-        new_linkage_index = [new_index, new_indices]
+        new_lm_array[merged_indices] = np.inf
 
-        labels[np.isin(labels, [index1, index2])] = new_index
-        linkage_matrix = np.delete(linkage_matrix, lm_min_index, axis=0)
-        linkage_matrix = np.delete(linkage_matrix, lm_min_index, axis=1)
-        linkage_matrix = np.pad(linkage_matrix, ((0, 1), (0, 1)))
-        linkage_matrix[-1, :] = new_lm_array
-        linkage_matrix[:, -1] = new_lm_array
-        del linkage_indices[lm_min_index[1]]
-        del linkage_indices[lm_min_index[0]]
-        linkage_indices.append(new_linkage_index)
+        labels[(labels == child[0]) | (labels == child[1])] = new_cluster
 
-        return child, distance, linkage_matrix
+        last_active_index = num_clusters - 1
+        cluster_at_last = int(self._index_to_cluster[last_active_index])
+        self._linkage_matrix[index1, :num_clusters] = self._linkage_matrix[:num_clusters, index1] = new_lm_array
+        self._linkage_matrix[index2, :] = self._linkage_matrix[last_active_index, :]
+        self._linkage_matrix[:, index2] = self._linkage_matrix[:, last_active_index]
+        self._linkage_matrix[last_active_index, :] = self._linkage_matrix[:, last_active_index] = np.inf
 
-    def _calc_clusters_distance(
-        self,
-        i: int,
-        i_merged_1: int,
-        i_merged_2: int,
-        linkage_matrix: NDArray[Any],
-        linkage_indices: list[list[Any]],
-        X: NDArray[Any],
-    ) -> float:
-        """Calculate the distance between a target cluster and two newly merged clusters.
+        self._cluster_to_index[new_cluster] = index1
+        self._cluster_to_index[cluster_at_last] = index2
+        self._cluster_to_index[child] = -1
 
-        Dispatches the calculation to the specific function based on `self.linkage`.
+        self._index_to_cluster[index1] = new_cluster
+        self._index_to_cluster[index2] = cluster_at_last
 
-        Args:
-            i: Index of the target cluster.
-            i_merged_1: Index of the first merged cluster.
-            i_merged_2: Index of the second merged cluster.
-            linkage_matrix: The current distance matrix.
-            linkage_indices: The current indices mapping.
-            X: The original input data.
+        self._cluster_size[index1] = self._cluster_size[merged_indices].sum()
+        self._cluster_size[index2] = self._cluster_size[last_active_index]
+        self._cluster_size[last_active_index] = -1
 
-        Returns:
-            The calculated distance according to the specified linkage method.
-        """
-        linkage_methods: dict[str, Callable[..., float]] = {
-            "single": _single_clusters_distance,
-            "complete": _complete_clusters_distance,
-            "average": _average_clusters_distance,
-            "ward": _ward_clusters_distance,
-        }
-        return linkage_methods[self.linkage](
-            i=i,
-            i_merged_1=i_merged_1,
-            i_merged_2=i_merged_2,
-            linkage_matrix=linkage_matrix,
-            linkage_indices=linkage_indices,
-            X=X,
-        )
+        return child, distance
 
     def _validate_self_params(self, X: NDArray[Any]) -> None:
         """Validate the hyperparameters against the training data.
@@ -198,10 +167,10 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             raise ValueError(
                 f"The 'n_clusters' parameter must be an int in the range [1, inf). Got {self.n_clusters} instead."
             )
-        if self.linkage not in ("single", "complete", "average", "ward"):
+        if self.linkage not in _LINKAGE_METHODS:
+            supported = ", ".join(f"'{k}'" for k in _LINKAGE_METHODS)
             raise ValueError(
-                f"The 'linkage' parameter must be a str among "
-                f"{{'single', 'complete', 'average', 'ward'}}. Got '{self.linkage}' instead."
+                f"The 'linkage' parameter must be a str among {{{supported}}}. Got '{self.linkage}' instead."
             )
         num_samples = X.shape[0]
         if self.n_clusters > num_samples:
@@ -211,46 +180,47 @@ class AgglomerativeClustering(ClusterMixin, BaseEstimator):  # type: ignore
             )
 
 
-def _single_clusters_distance(
-    i: int, i_merged_1: int, i_merged_2: int, linkage_matrix: NDArray[Any], **kwargs: Any
-) -> float:
-    distance = min(linkage_matrix[i][i_merged_1], linkage_matrix[i][i_merged_2])
-    return float(distance)
+def _single_clusters_distance(merged_indices: list[int], linkage_matrix: NDArray[Any], **kwargs: Any) -> NDArray[Any]:
+    distances: NDArray[Any] = linkage_matrix[merged_indices].min(axis=0)
+    return distances
 
 
-def _complete_clusters_distance(
-    i: int, i_merged_1: int, i_merged_2: int, linkage_matrix: NDArray[Any], **kwargs: Any
-) -> float:
-    distance = max(linkage_matrix[i][i_merged_1], linkage_matrix[i][i_merged_2])
-    return float(distance)
+def _complete_clusters_distance(merged_indices: list[int], linkage_matrix: NDArray[Any], **kwargs: Any) -> NDArray[Any]:
+    distances: NDArray[Any] = linkage_matrix[merged_indices].max(axis=0)
+    return distances
 
 
 def _average_clusters_distance(
-    i: int,
-    i_merged_1: int,
-    i_merged_2: int,
+    merged_indices: list[int],
+    cluster_size: NDArray[Any],
     linkage_matrix: NDArray[Any],
-    linkage_indices: list[list[Any]],
     **kwargs: Any,
-) -> float:
-    n1, n2 = len(linkage_indices[i_merged_1][1]), len(linkage_indices[i_merged_2][1])
-    distance = (linkage_matrix[i][i_merged_1] * n1 + linkage_matrix[i][i_merged_2] * n2) / (n1 + n2)
-    return float(distance)
+) -> NDArray[Any]:
+    index1, index2 = merged_indices
+    n1, n2 = cluster_size[merged_indices]
+    distances: NDArray[Any] = (linkage_matrix[index1] * n1 + linkage_matrix[index2] * n2) / (n1 + n2)
+    return distances
 
 
 def _ward_clusters_distance(
-    i: int,
-    i_merged_1: int,
-    i_merged_2: int,
+    merged_indices: list[int],
+    cluster_size: NDArray[Any],
     linkage_matrix: NDArray[Any],
-    linkage_indices: list[list[Any]],
     **kwargs: Any,
-) -> float:
-    n = len(linkage_indices[i][1])
-    n1, n2 = len(linkage_indices[i_merged_1][1]), len(linkage_indices[i_merged_2][1])
-    d0 = linkage_matrix[i_merged_1][i_merged_2]
-    d1, d2 = linkage_matrix[i][i_merged_1], linkage_matrix[i][i_merged_2]
+) -> NDArray[Any]:
+    n1, n2 = cluster_size[merged_indices]
+    d0 = linkage_matrix[tuple(merged_indices)]
+    d1, d2 = linkage_matrix[merged_indices]
 
-    distance_squared = ((n1 + n) * d1**2 + (n2 + n) * d2**2 - n * d0**2) / (n1 + n2 + n)
-    distance = np.sqrt(distance_squared)
-    return float(distance)
+    distances: NDArray[Any] = np.sqrt(
+        ((n1 + cluster_size) * d1**2 + (n2 + cluster_size) * d2**2 - cluster_size * d0**2) / (n1 + n2 + cluster_size)
+    )
+    return distances
+
+
+_LINKAGE_METHODS: dict[str, Callable[..., NDArray[Any]]] = {
+    "single": _single_clusters_distance,
+    "complete": _complete_clusters_distance,
+    "average": _average_clusters_distance,
+    "ward": _ward_clusters_distance,
+}
