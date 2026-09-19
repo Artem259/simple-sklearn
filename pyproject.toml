@@ -50,6 +50,8 @@ quality = [
     "mypy>=1.19.1",
     "pandas-stubs>=2.2.3",
     "scipy-stubs>=1.13.1",
+    "types-seaborn>=0.13.2",
+    "nbqa>=1.9.1",
 ]
 build = [
     "build==1.4.0",

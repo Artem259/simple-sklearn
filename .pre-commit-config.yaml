@@ -39,8 +39,16 @@ repos:
   - repo: local
     hooks:
       - id: mypy
-        name: mypy
+        name: mypy (base)
         entry: python -m mypy
         language: system
         types: [python]
+        pass_filenames: false
+
+      - id: nbqa-mypy
+        name: mypy (notebooks)
+        entry: python -m nbqa mypy docs/notebooks/ --cache-dir=.mypy_cache_notebooks --allow-redefinition
+        language: system
+        types_or: [python, jupyter]
+        files: ^docs/notebooks/
         pass_filenames: false
