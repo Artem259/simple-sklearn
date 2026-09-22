@@ -1,19 +1,21 @@
 import time
+from typing import Any
 
 import numpy as np
 import scipy
 import sklearn
 from matplotlib import pyplot as plt
+from numpy.typing import NDArray
 from sklearn.datasets import make_blobs, make_circles, make_moons
 
 
-def plot_raw_data(X, labels):
+def plot_raw_data(X: NDArray[Any], labels: NDArray[Any]) -> None:
     plt.scatter(X[:, 0], X[:, 1])
     for i, label in enumerate(labels):
         plt.text(
             X[i, 0] - 0.1,
             X[i, 1] + 0.1,
-            label,
+            str(label),
             fontsize=10,
             ha="right",
             va="bottom",
@@ -23,22 +25,22 @@ def plot_raw_data(X, labels):
 
 
 def plot_clusters(
-    X,
-    cluster_labels,
-    labels=None,
-    special_indices=None,
-    cluster_centers=None,
-    text_shift=0.1,
-    fontsize=10,
-    s=None,
-    new_fig=True,
-    figsize=(6.4, 4.8),
-    title=None,
-    xlabel=None,
-    ylabel=None,
-    show_legend=True,
-    show_plot=True,
-):
+    X: NDArray[Any],
+    cluster_labels: NDArray[np.int64],
+    labels: NDArray[Any] | None = None,
+    special_indices: NDArray[np.int64] | None = None,
+    cluster_centers: NDArray[np.float64] | None = None,
+    text_shift: float = 0.1,
+    fontsize: int = 10,
+    s: float | None = None,
+    new_fig: bool = True,
+    figsize: tuple[float, float] = (6.4, 4.8),
+    title: str = "",
+    xlabel: str = "",
+    ylabel: str = "",
+    show_legend: bool = True,
+    show_plot: bool = True,
+) -> None:
     unique_clusters = np.unique(cluster_labels)
     colors = plt.cm.get_cmap("tab10")
     big_s = s * 3 if s is not None else None
@@ -67,17 +69,6 @@ def plot_clusters(
             label="Centroids",
         )
 
-    if labels is not None and special_indices is None:
-        for i, label in enumerate(labels):
-            plt.text(
-                X[i, 0] - text_shift,
-                X[i, 1] + text_shift,
-                label,
-                fontsize=fontsize,
-                ha="right",
-                va="bottom",
-            )
-
     if special_indices is not None:
         plt.scatter(
             X[special_indices, 0],
@@ -87,11 +78,17 @@ def plot_clusters(
             s=big_s,
             label="Special",
         )
-        for i in special_indices:
+    if labels is not None:
+        label_indices = (
+            special_indices
+            if special_indices is not None
+            else range(len(labels))
+        )
+        for i in label_indices:
             plt.text(
                 X[i, 0] - text_shift,
                 X[i, 1] + text_shift,
-                labels[i],
+                str(labels[i]),
                 fontsize=fontsize,
                 ha="right",
                 va="bottom",
@@ -108,8 +105,12 @@ def plot_clusters(
 
 
 def plot_dendrogram(
-    children, distances, labels, title, figsize=(6.4, 4.8)
-):
+    children: NDArray[np.int64],
+    distances: NDArray[np.float64],
+    labels: NDArray[Any],
+    title: str,
+    figsize: tuple[float, float] = (6.4, 4.8),
+) -> None:
     linkage_matrix = np.column_stack(
         [children, distances, np.zeros(len(children))]
     ).astype(float)
@@ -124,8 +125,10 @@ def plot_dendrogram(
 
 
 def generate_toy_datasets(
-    n_samples, random_state_1=30, random_state_2=170
-):
+    n_samples: int,
+    random_state_1: int = 30,
+    random_state_2: int = 170,
+) -> list[tuple[str, NDArray[np.float64]]]:
     circles = make_circles(
         n_samples=n_samples,
         factor=0.5,
@@ -154,21 +157,26 @@ def generate_toy_datasets(
         random_state=random_state_2,
     )[0]
 
-    datasets = [
-        ["noisy_circles", circles],
-        ["noisy_moons", moons],
-        ["varied", varied],
-        ["aniso", aniso],
-        ["blobs", blobs],
-        ["no_structure", no_structure],
+    raw_datasets = [
+        ("noisy_circles", circles),
+        ("noisy_moons", moons),
+        ("varied", varied),
+        ("aniso", aniso),
+        ("blobs", blobs),
+        ("no_structure", no_structure),
     ]
     scaler = sklearn.preprocessing.StandardScaler()
-    datasets = [(s, scaler.fit_transform(X)) for s, X in datasets]
+    datasets = [(s, scaler.fit_transform(X)) for s, X in raw_datasets]
 
     return datasets
 
 
-def plot_toy_datasets(datasets, clusterers, figsize, axis_lim=2.5):
+def plot_toy_datasets(
+    datasets: list[tuple[str, NDArray[np.float64]]],
+    clusterers: list[tuple[str, Any]],
+    figsize: tuple[float, float],
+    axis_lim: float = 2.5,
+) -> None:
     _fig, axes = plt.subplots(
         len(datasets), len(clusterers), figsize=figsize
     )
@@ -194,7 +202,7 @@ def plot_toy_datasets(datasets, clusterers, figsize, axis_lim=2.5):
             plot_clusters(
                 X,
                 y_pred,
-                s=10,
+                s=10.0,
                 show_legend=False,
                 new_fig=False,
                 show_plot=False,
