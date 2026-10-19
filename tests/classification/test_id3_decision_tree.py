@@ -2,17 +2,17 @@ import numpy as np
 import pytest
 from numpy.typing import NDArray
 
-from simple_sklearn.classification import DecisionTreeClassifier
+from simple_sklearn.classification import ID3DecisionTreeClassifier
 from simple_sklearn.classification.tree_structure import (
-    DecisionTreeNode,
-    LeafNode,
-    SplitterNode,
+    ID3DecisionTreeNode,
+    ID3LeafNode,
+    ID3SplitterNode,
 )
 from tests.classification.testing_utils import assert_valid_classification_predictions
 from tests.testing_utils import assert_attributes_match_types
 
 
-def test_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]]) -> None:
+def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]]) -> None:
     X, y = dataset_4f
     n_features = X.shape[1]
     unique_classes = set(y)
@@ -34,10 +34,10 @@ def test_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDArray[
         "classes_": NDArray[np.str_],
         "num_features_": int,
         "feature_unique_values_": list[set[int]],
-        "tree_": DecisionTreeNode,
+        "tree_": ID3DecisionTreeNode,
     }
 
-    clf = DecisionTreeClassifier()
+    clf = ID3DecisionTreeClassifier()
     clf.fit(X, y)
 
     # Validate expected learned attributes
@@ -57,7 +57,7 @@ def test_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDArray[
 
     # Validate tree_ attribute
     # The root must resolve to either a split or a terminal leaf
-    assert isinstance(clf.tree_, (SplitterNode, LeafNode))
+    assert isinstance(clf.tree_, (ID3SplitterNode, ID3LeafNode))
 
     # Check predictions
     y_pred = clf.predict(X_pred)
@@ -65,11 +65,11 @@ def test_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDArray[
     assert list(y_pred) == ["y1", "y1", "y1", "y0", "y1"]
 
 
-def test_decision_tree_predict_unknown_node() -> None:
-    clf = DecisionTreeClassifier()
+def test_id3_decision_tree_predict_unknown_node() -> None:
+    clf = ID3DecisionTreeClassifier()
     clf.fit([[0, 0]], [0])
 
-    class DummyNode(DecisionTreeNode):
+    class DummyNode(ID3DecisionTreeNode):
         pass
 
     clf.tree_ = DummyNode()
