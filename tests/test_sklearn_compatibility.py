@@ -3,7 +3,7 @@ from typing import Any
 from sklearn.utils.estimator_checks import parametrize_with_checks
 
 from simple_sklearn.classification import (
-    DecisionTreeClassifier,
+    ID3DecisionTreeClassifier,
     KNeighborsClassifier,
     NaiveBayesClassifier,
     OneRClassifier,
@@ -19,7 +19,7 @@ from simple_sklearn.clustering import (
 @parametrize_with_checks(  # type: ignore[untyped-decorator]
     [
         # classifiers
-        DecisionTreeClassifier(),
+        ID3DecisionTreeClassifier(),
         KNeighborsClassifier(),
         NaiveBayesClassifier(),
         OneRClassifier(),
