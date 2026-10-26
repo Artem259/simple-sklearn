@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "simple-sklearn"
 dynamic = ["version"]
 authors = [
-  { name="Artem Poliakov", email="artem4250@gmail.com" },
+  { name = "Artem Poliakov", email = "artem4250@gmail.com" },
 ]
 description = "Pythonic machine learning algorithms built for educational transparency and scikit-learn compatibility"
 readme = "README.md"
@@ -36,7 +36,7 @@ dependencies = [
     "typing-extensions>=4.1.0, <5.0",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 docs = [
     "notebook>=7.3.2",
     "matplotlib>=3.9.4",
@@ -47,6 +47,8 @@ docs = [
     "mkdocstrings-python>=2.0.3",
 ]
 quality = [
+    "pre-commit>=4.0.0",
+    "ruff>=0.14.9",
     "mypy>=1.19.1",
     "pandas-stubs>=2.2.3",
     "scipy-stubs>=1.13.1",
@@ -54,18 +56,26 @@ quality = [
     "nbqa>=1.9.1",
 ]
 build = [
-    "build==1.4.0",
-    "twine==6.2.0",
-    "check-sdist==1.4.0",
-    "check-wheel-contents==0.6.3",
+    "build>=1.4.0",
+    "twine>=6.2.0",
+    "check-sdist>=1.4.0",
+    "check-wheel-contents>=0.6.3",
 ]
 test = [
     "pytest>=8.4.2",
     "pytest-cov>=6.0.0",
 ]
 dev = [
-    "pre-commit>=4.0.0",
-    "ruff==0.14.9",
+    { include-group = "docs" },
+    { include-group = "quality" },
+    { include-group = "build" },
+    { include-group = "test" },
+]
+
+[tool.uv]
+default-groups = ["dev"]
+constraint-dependencies = [
+    "pymdown-extensions<12.2 ; python_version < '3.11'",
 ]
 
 [project.urls]
@@ -88,6 +98,7 @@ git-only = [
     "Makefile",
     "mkdocs.yml",
     "release-please-config.json",
+    "uv.lock",
 ]
 
 [tool.check-wheel-contents]
