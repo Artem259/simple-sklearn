@@ -27,21 +27,20 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: 'pip'
+      - name: Set up uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[quality,test]"
+        run: uv sync --locked --no-default-groups --group quality --group test
+
+      - name: Cache pre-commit environments
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-4|${{ hashFiles('.pre-commit-config.yaml') }}
 
       - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
-        with:
-          extra_args: --all-files
+        run: uv run --no-sync pre-commit run --all-files
 
   build:
     name: Build Package
@@ -53,28 +52,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: 'pip'
+      - name: Set up uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install ".[build]"
+        run: uv sync --locked --only-group build
 
       - name: Verify sdist contents
-        run: python -m check_sdist --inject-junk
+        run: uv run --no-sync check-sdist --inject-junk
 
       - name: Build sdist and wheel
-        run: python -m build
+        run: uv build --clear
 
       - name: Verify wheel contents
-        run: python -m check_wheel_contents dist/*.whl
+        run: uv run --no-sync check-wheel-contents dist/*.whl
 
       - name: Validate metadata with Twine
-        run: python -m twine check --strict dist/*
+        run: uv run --no-sync twine check --strict dist/*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -105,11 +99,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Set up uv and Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
 
       - name: Download built package
         uses: actions/download-artifact@v4
@@ -120,14 +113,14 @@ jobs:
       - name: Install built wheel and test dependencies
         shell: bash
         run: |
-          python -m pip install --upgrade pip
+          uv sync --locked --no-default-groups --group test --no-install-project
           WHEEL=(dist/*.whl)
-          python -m pip install "${WHEEL[0]}[test]"
+          uv pip install --no-deps "${WHEEL[0]}"
 
       - name: Run tests with Pytest
         shell: bash
         run: |
-          python -m pytest \
+          uv run --no-sync pytest \
             --cov=simple_sklearn \
             --cov-branch \
             --cov-report=xml \
@@ -175,11 +168,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: 'pip'
+      - name: Set up uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
 
       - name: Configure GitHub Pages
         if: ${{ !env.ACT }}
@@ -187,12 +177,10 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[docs]"
+        run: uv sync --locked --no-default-groups --group docs
 
       - name: Build MkDocs
-        run: mkdocs build --strict
+        run: uv run --no-sync mkdocs build --strict
         env:
           MKDOCS_SITE_URL: ${{ steps.pages.outputs.base_url }}
 

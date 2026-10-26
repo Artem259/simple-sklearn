@@ -1,9 +1,8 @@
 # Contributing to simple-sklearn
 
-[![Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Typing](https://img.shields.io/pypi/types/simple-sklearn)](https://pypi.org/p/simple-sklearn)
-
-First off, thank you for considering contributing to **simple-sklearn**!
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)][uv-url]
+[![Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)][ruff-url]
+[![Typing](https://img.shields.io/pypi/types/simple-sklearn)][pypi-url]
 
 Before starting work on a major feature or architectural change, please open an issue to discuss it.
 This ensures your approach aligns with the project's roadmap and prevents wasted effort.
@@ -31,14 +30,15 @@ the changes for semantic versioning.
 
 ### Prerequisites
 
-* Python 3.10 or higher
+* [uv](https://docs.astral.sh/uv/) (automatically installs Python 3.10, creates `.venv`, and manages dependencies)
 * Git
 
 ### Workflow
 
-The project uses a Makefile to simplify development workflows.
+The project uses `uv` for dependency and environment management, alongside a `Makefile` to simplify
+common development tasks.
 
-*Note for Windows users: the `make` tool is not natively installed on Windows, but manual fallback commands
+*Note for Windows users: the `make` tool is not natively installed on Windows, so direct `uv` fallback commands
 are provided below.*
 
 1. **Fork and clone the repository:**
@@ -66,51 +66,38 @@ are provided below.*
     git checkout -b feat/my-new-feature
     ```
 
-4. **Create and activate a virtual environment:**
+4. **Install dependencies and set up the environment:**
 
-    ```bash
-    python -m venv .venv
-
-    # On Linux/macOS:
-    source .venv/bin/activate
-
-    # On Windows:
-    .venv\Scripts\activate
-    ```
-
-5. **Install Dependencies:**
+    `uv` automatically creates a `.venv` virtual environment in the project root and installs the
+    package in editable mode along with all locked development dependencies.
 
     **Using `make` (Linux/macOS):**
-
-    This command installs the package in editable mode along with all necessary dev dependencies,
-    and sets up the `pre-commit` hooks.
 
     ```bash
     make setup
     ```
 
-    **Manual commands (Windows):**
+    **Manual commands (Windows / without `make`):**
 
     ```bash
-    python -m pip install --upgrade pip
-    python -m pip install -e ".[docs,quality,build,test,dev]"
-    pre-commit install
+    uv sync --locked
+    uv run pre-commit install
     ```
 
-6. **Run checks and tests:**
+5. **Run checks and tests:**
 
     The project uses `ruff` for formatting/linting, `mypy` for static type checking, and `pytest` for testing.
 
     ```bash
     make lint        # Runs pre-commit checks across all files
-    make test        # Runs the pytest suite
+    make test        # Runs the pytest suite (stops on first failure)
     make test-cov    # Runs the pytest suite and generates a coverage report
     make check       # Runs linting, build verification (sdist/wheel), and tests sequentially
     ```
 
-    You can also run `pytest` and `pre-commit run --all-files` manually.
+    You can also run `uv run pytest -x` and `uv run pre-commit run --all-files` manually.
 
-7. **Local CI/CD Simulation (Optional):**
+6. **Local CI/CD Simulation (Optional):**
 
     If you have [act](https://nektosact.com/) installed locally, you can simulate the GitHub Actions pipeline
     before opening a PR:
@@ -119,14 +106,16 @@ are provided below.*
     make act-pr      # Simulates the pull-request workflow locally
     ```
 
-8. **Build documentation locally:**
+7. **Build documentation locally:**
 
     The project uses `mkdocs` with the `mkdocs-jupyter` plugin for demo Jupyter notebooks.
 
     ```bash
     make docs        # Preview documentation with live-reloading (no notebook execution)
-    make docs-build  # Build and verify documentation
+    make docs-build  # Build and verify documentation strictly, then serve on port 8000
     ```
+
+    You can also run `uv run mkdocs build --strict` manually.
 
 ---
 
@@ -149,8 +138,12 @@ Before submitting your PR, please ensure you have completed the following checkl
 
 * [ ] I have fetched the latest changes from `upstream/main` and rebased my branch if necessary.
 * [ ] My PR is narrowly scoped to address a single feature or bug fix.
-* [ ] `make check` and `make docs-build` (or the equivalent manual commands) pass locally without errors.
+* [ ] `make check` and `make docs-build` (or the equivalent `uv run` commands) pass locally without errors.
 * [ ] I have added or updated tests for my changes, and my changes do not decrease overall test coverage.
 * [ ] I have successfully run scikit-learn estimator checks against any new estimators.
 * [ ] I have updated the docstrings and documentation if my changes affect the API.
 * [ ] My PR title follows the Conventional Commits specification.
+
+[uv-url]: https://github.com/astral-sh/uv
+[ruff-url]: https://github.com/astral-sh/ruff
+[pypi-url]: https://pypi.org/p/simple-sklearn
