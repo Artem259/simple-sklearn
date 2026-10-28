@@ -4,9 +4,9 @@ from numpy.typing import NDArray
 
 from simple_sklearn.classification import ID3DecisionTreeClassifier
 from simple_sklearn.classification.tree_structure import (
-    ID3DecisionTreeNode,
-    ID3LeafNode,
+    DecisionTreeNode,
     ID3SplitterNode,
+    LeafNode,
 )
 from tests.classification.testing_utils import assert_valid_classification_predictions
 from tests.testing_utils import assert_attributes_match_types
@@ -34,7 +34,7 @@ def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDAr
         "classes_": NDArray[np.str_],
         "num_features_": int,
         "feature_unique_values_": list[set[int]],
-        "tree_": ID3DecisionTreeNode,
+        "tree_": DecisionTreeNode,
     }
 
     clf = ID3DecisionTreeClassifier()
@@ -57,7 +57,7 @@ def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDAr
 
     # Validate tree_ attribute
     # The root must resolve to either a split or a terminal leaf
-    assert isinstance(clf.tree_, (ID3SplitterNode, ID3LeafNode))
+    assert isinstance(clf.tree_, (ID3SplitterNode, LeafNode))
 
     # Check predictions
     y_pred = clf.predict(X_pred)
@@ -69,7 +69,7 @@ def test_id3_decision_tree_predict_unknown_node() -> None:
     clf = ID3DecisionTreeClassifier()
     clf.fit([[0, 0]], [0])
 
-    class DummyNode(ID3DecisionTreeNode):
+    class DummyNode(DecisionTreeNode):
         pass
 
     clf.tree_ = DummyNode()

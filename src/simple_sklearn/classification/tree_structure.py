@@ -5,6 +5,6 @@ a decision tree. It provides the base node structure alongside the specific
 implementations for feature-splitting branches and terminal prediction leaves.
 """
 
-from ._id3_decision_tree import ID3DecisionTreeNode, ID3LeafNode, ID3SplitterNode
+from ._id3_decision_tree import DecisionTreeNode, ID3SplitterNode, LeafNode
 
-__all__ = ["ID3DecisionTreeNode", "ID3LeafNode", "ID3SplitterNode"]
+__all__ = ["DecisionTreeNode", "ID3SplitterNode", "LeafNode"]

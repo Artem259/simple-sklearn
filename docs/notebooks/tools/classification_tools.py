@@ -10,9 +10,9 @@ from simple_sklearn.classification import (
     OneRClassifier,
 )
 from simple_sklearn.classification.tree_structure import (
-    ID3DecisionTreeNode,
-    ID3LeafNode,
+    DecisionTreeNode,
     ID3SplitterNode,
+    LeafNode,
 )
 
 
@@ -51,7 +51,7 @@ def id3_decision_tree_classifier_info(
     clf: ID3DecisionTreeClassifier,
 ) -> None:
     def display_tree(
-        node: ID3DecisionTreeNode,
+        node: DecisionTreeNode,
         prefix: str = "",
         is_last: bool = True,
         is_root: bool = False,
@@ -63,7 +63,7 @@ def id3_decision_tree_classifier_info(
             connector = "└── " if is_last else "├── "
             new_prefix = prefix + ("    " if is_last else "│   ")
 
-        if isinstance(node, ID3LeafNode):
+        if isinstance(node, LeafNode):
             print(prefix + connector + f"Label: {node.label}")
         if isinstance(node, ID3SplitterNode):
             print(

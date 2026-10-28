@@ -29,14 +29,14 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         classes_: The unique class labels observed in the training data.
         num_features_: The number of features seen during fitting.
         feature_unique_values_: A list of sets containing the unique values encountered for each feature.
-        tree_: The root node of the fitted decision tree (an `ID3DecisionTreeNode` instance).
+        tree_: The root node of the fitted decision tree (a `DecisionTreeNode` instance).
             Nodes store integer-encoded labels mapped to the `classes_` array.
     """
 
     classes_: NDArray[Any]
     num_features_: int
     feature_unique_values_: list[set[Any]]
-    tree_: "ID3DecisionTreeNode"
+    tree_: "DecisionTreeNode"
 
     def __init__(self) -> None:
         super().__init__()
@@ -93,7 +93,7 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
             curr_node = self.tree_
             while True:
                 match curr_node:
-                    case ID3LeafNode():
+                    case LeafNode():
                         y_pred.append(curr_node.label)
                         break
                     case ID3SplitterNode():
@@ -108,7 +108,7 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
 
         return np.asarray(self.classes_[y_pred])
 
-    def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "ID3DecisionTreeNode":
+    def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "DecisionTreeNode":
         """Recursively build the decision tree using the ID3 algorithm.
 
         Args:
@@ -116,14 +116,14 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
             feat_indices: A set of remaining feature indices available for splitting.
 
         Returns:
-            An `ID3DecisionTreeNode` representing the root of the constructed subtree
-            (either an `ID3SplitterNode` or `ID3LeafNode`).
+            A `DecisionTreeNode` representing the root of the constructed subtree
+            (either an `ID3SplitterNode` or `LeafNode`).
         """
         y_counts = df["y"].value_counts()
         most_frequent_y = y_counts.index[0]
 
         if len(y_counts) == 1 or not feat_indices:
-            return ID3LeafNode(label=most_frequent_y)
+            return LeafNode(label=most_frequent_y)
 
         best_feat = max(feat_indices, key=lambda x: self._information_gain(df, x))
         node = ID3SplitterNode(feat_index=best_feat, majority_label=most_frequent_y)
@@ -136,7 +136,7 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         df_best_feat_values = set(df[best_feat])
         unseen_best_feat_values = all_best_feat_values - df_best_feat_values
         for best_feat_value in unseen_best_feat_values:
-            node.children[best_feat_value] = ID3LeafNode(label=most_frequent_y)
+            node.children[best_feat_value] = LeafNode(label=most_frequent_y)
 
         return node
 
@@ -175,14 +175,14 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return entropy
 
 
-class ID3DecisionTreeNode:
+class DecisionTreeNode:
     """Base class for nodes in the decision tree."""
 
     pass
 
 
-class ID3SplitterNode(ID3DecisionTreeNode):
-    """A decision tree node representing a feature split.
+class ID3SplitterNode(DecisionTreeNode):
+    """An ID3 Decision Tree node representing a feature split.
 
     Args:
         feat_index: The index of the feature used for splitting at this node.
@@ -190,16 +190,16 @@ class ID3SplitterNode(ID3DecisionTreeNode):
             used as a fallback during prediction.
 
     Attributes:
-        children: A dictionary mapping feature values to child `ID3DecisionTreeNode` instances.
+        children: A dictionary mapping feature values to child `DecisionTreeNode` instances.
     """
 
     def __init__(self, feat_index: int, majority_label: int) -> None:
         self.feat_index: int = feat_index
         self.majority_label: int = majority_label
-        self.children: dict[Any, ID3DecisionTreeNode] = {}
+        self.children: dict[Any, DecisionTreeNode] = {}
 
 
-class ID3LeafNode(ID3DecisionTreeNode):
+class LeafNode(DecisionTreeNode):
     """A decision tree node representing a terminal leaf.
 
     Args:
