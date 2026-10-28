@@ -1,6 +1,6 @@
-"""Decision Tree Classification.
+"""ID3 Decision Tree Classification.
 
-This module provides the `DecisionTreeClassifier` class and its associated node structures.
+This module provides the `ID3DecisionTreeClassifier` class and its associated node structures.
 """
 
 from typing import Any
@@ -14,10 +14,10 @@ from sklearn.utils.validation import check_is_fitted, validate_data
 from typing_extensions import Self
 
 
-class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
+class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
     """Perform Decision Tree classification using the ID3 algorithm.
 
-    The Decision Tree classifier builds a tree from categorical features by recursively
+    The ID3 Decision Tree classifier builds a tree from categorical features by recursively
     partitioning the data based on the feature that maximizes information gain
     (decreases entropy).
 
@@ -42,7 +42,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         super().__init__()
 
     def fit(self, X: Any, y: Any) -> Self:
-        """Fit the Decision Tree classification model.
+        """Fit the ID3 Decision Tree classification model.
 
         Args:
             X: Training instances to fit the model. Can be an array-like of shape `(n_samples, n_features)`.
@@ -96,7 +96,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
                     case LeafNode():
                         y_pred.append(curr_node.label)
                         break
-                    case SplitterNode():
+                    case ID3SplitterNode():
                         feat_value = x[curr_node.feat_index]
                         if feat_value in curr_node.children:
                             curr_node = curr_node.children[feat_value]
@@ -117,7 +117,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
 
         Returns:
             A `DecisionTreeNode` representing the root of the constructed subtree
-            (either a `SplitterNode` or `LeafNode`).
+            (either an `ID3SplitterNode` or `LeafNode`).
         """
         y_counts = df["y"].value_counts()
         most_frequent_y = y_counts.index[0]
@@ -126,7 +126,7 @@ class DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
             return LeafNode(label=most_frequent_y)
 
         best_feat = max(feat_indices, key=lambda x: self._information_gain(df, x))
-        node = SplitterNode(feat_index=best_feat, majority_label=most_frequent_y)
+        node = ID3SplitterNode(feat_index=best_feat, majority_label=most_frequent_y)
 
         for best_feat_value, df_group in df.groupby(by=best_feat):
             child_node = self._id3_algorithm(df_group, feat_indices - {best_feat})
@@ -181,8 +181,8 @@ class DecisionTreeNode:
     pass
 
 
-class SplitterNode(DecisionTreeNode):
-    """A decision tree node representing a feature split.
+class ID3SplitterNode(DecisionTreeNode):
+    """An ID3 Decision Tree node representing a feature split.
 
     Args:
         feat_index: The index of the feature used for splitting at this node.

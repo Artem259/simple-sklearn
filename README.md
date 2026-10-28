@@ -27,7 +27,7 @@ The implementations prioritize readability and simplicity over execution speed a
 * OneRClassifier: 1R (One Rule) classification.
 * NaiveBayesClassifier: Categorical Naive Bayes classification.
 * KNeighborsClassifier: K-Nearest Neighbors classification.
-* DecisionTreeClassifier: Decision Tree classification using the ID3 algorithm.
+* ID3DecisionTreeClassifier: Decision Tree classification using the ID3 algorithm.
 
 **Clustering:**
 
@@ -126,7 +126,7 @@ Future development focuses on:
     * Implementing a custom KDTree for faster nearest-neighbor searches.
     * Refactoring AgglomerativeClustering with Priority Queue (Min-Heap) to reduce time complexity
       during cluster merging.
-    * Adding other estimator features (e.g., standard hyperparameters like `max_depth` for `DecisionTreeClassifier`).
+    * Adding other estimator features (e.g., standard hyperparameters like `max_depth` for `ID3DecisionTreeClassifier`).
 2. Documentation Upgrades:
     * Configuring documentation versioning via the `mike` tool.
 

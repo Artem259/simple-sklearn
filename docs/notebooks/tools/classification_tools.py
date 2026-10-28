@@ -4,15 +4,15 @@ from typing import Any
 import sklearn
 
 from simple_sklearn.classification import (
-    DecisionTreeClassifier,
+    ID3DecisionTreeClassifier,
     KNeighborsClassifier,
     NaiveBayesClassifier,
     OneRClassifier,
 )
 from simple_sklearn.classification.tree_structure import (
     DecisionTreeNode,
+    ID3SplitterNode,
     LeafNode,
-    SplitterNode,
 )
 
 
@@ -47,8 +47,8 @@ def sklearn_categorical_nb_info(
         print(*value, "\n")
 
 
-def decision_tree_classifier_info(
-    clf: DecisionTreeClassifier,
+def id3_decision_tree_classifier_info(
+    clf: ID3DecisionTreeClassifier,
 ) -> None:
     def display_tree(
         node: DecisionTreeNode,
@@ -65,7 +65,7 @@ def decision_tree_classifier_info(
 
         if isinstance(node, LeafNode):
             print(prefix + connector + f"Label: {node.label}")
-        if isinstance(node, SplitterNode):
+        if isinstance(node, ID3SplitterNode):
             print(
                 prefix + connector + f"Feature[{node.feat_index + 1}]"
             )
