@@ -3,7 +3,9 @@
 This module provides the `ID3DecisionTreeClassifier` class and its associated node structures.
 """
 
-from typing import Any
+from collections.abc import Iterator
+from dataclasses import dataclass, field
+from typing import Any, TypeAlias
 
 import numpy as np
 import pandas as pd
@@ -12,6 +14,8 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted, validate_data
 from typing_extensions import Self
+
+from ._base_tree_structure import LeafNode, SplitterNode
 
 
 class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
@@ -29,14 +33,14 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         classes_: The unique class labels observed in the training data.
         num_features_: The number of features seen during fitting.
         feature_unique_values_: A list of sets containing the unique values encountered for each feature.
-        tree_: The root node of the fitted decision tree (a `DecisionTreeNode` instance).
+        tree_: The root node of the fitted decision tree (an `ID3DecisionTreeNode` instance).
             Nodes store integer-encoded labels mapped to the `classes_` array.
     """
 
     classes_: NDArray[Any]
     num_features_: int
     feature_unique_values_: list[set[Any]]
-    tree_: "DecisionTreeNode"
+    tree_: "ID3DecisionTreeNode"
 
     def __init__(self) -> None:
         super().__init__()
@@ -92,23 +96,19 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         for x in X:
             curr_node = self.tree_
             while True:
-                match curr_node:
-                    case LeafNode():
-                        y_pred.append(curr_node.label)
-                        break
-                    case ID3SplitterNode():
-                        feat_value = x[curr_node.feat_index]
-                        if feat_value in curr_node.children:
-                            curr_node = curr_node.children[feat_value]
-                        else:
-                            y_pred.append(curr_node.majority_label)
-                            break
-                    case _:
-                        raise TypeError(f"Unknown node type encountered: {type(curr_node)}")
+                if isinstance(curr_node, LeafNode):
+                    y_pred.append(curr_node.label)
+                    break
+                feat_value = x[curr_node.feat_index]
+                if feat_value in curr_node.children:
+                    curr_node = curr_node.children[feat_value]
+                else:
+                    y_pred.append(curr_node.majority_label)
+                    break
 
         return np.asarray(self.classes_[y_pred])
 
-    def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "DecisionTreeNode":
+    def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "ID3DecisionTreeNode":
         """Recursively build the decision tree using the ID3 algorithm.
 
         Args:
@@ -116,8 +116,8 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
             feat_indices: A set of remaining feature indices available for splitting.
 
         Returns:
-            A `DecisionTreeNode` representing the root of the constructed subtree
-            (either an `ID3SplitterNode` or `LeafNode`).
+            An `ID3DecisionTreeNode` representing the root of the constructed subtree
+                (either an `ID3SplitterNode` or `LeafNode`).
         """
         y_counts = df["y"].value_counts()
         most_frequent_y = y_counts.index[0]
@@ -175,36 +175,23 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         return entropy
 
 
-class DecisionTreeNode:
-    """Base class for nodes in the decision tree."""
+@dataclass
+class ID3SplitterNode(SplitterNode):
+    """An ID3 Decision Tree node representing a categorical feature split.
 
-    pass
-
-
-class ID3SplitterNode(DecisionTreeNode):
-    """An ID3 Decision Tree node representing a feature split.
-
-    Args:
+    Attributes:
         feat_index: The index of the feature used for splitting at this node.
         majority_label: The integer-encoded majority class label at this node,
             used as a fallback during prediction.
-
-    Attributes:
-        children: A dictionary mapping feature values to child `DecisionTreeNode` instances.
+        children: A dictionary mapping feature values to child `ID3DecisionTreeNode` instances.
     """
 
-    def __init__(self, feat_index: int, majority_label: int) -> None:
-        self.feat_index: int = feat_index
-        self.majority_label: int = majority_label
-        self.children: dict[Any, DecisionTreeNode] = {}
+    children: dict[Any, "ID3DecisionTreeNode"] = field(default_factory=dict)
+
+    def iter_branches(self) -> Iterator[tuple[Any, "ID3DecisionTreeNode"]]:  # TODO fix docs displaying
+        """Yield pairs of `(feature_value, child_node)` for each categorical branch."""
+        yield from self.children.items()  # TODO test-cov
 
 
-class LeafNode(DecisionTreeNode):
-    """A decision tree node representing a terminal leaf.
-
-    Args:
-        label: The integer-encoded predicted class label for this leaf.
-    """
-
-    def __init__(self, label: int) -> None:
-        self.label: int = label
+ID3DecisionTreeNode: TypeAlias = ID3SplitterNode | LeafNode
+"""Type alias for a node in an ID3 Decision Tree (`ID3SplitterNode` or `LeafNode`)."""

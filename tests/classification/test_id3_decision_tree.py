@@ -1,12 +1,9 @@
 import numpy as np
-import pytest
 from numpy.typing import NDArray
 
 from simple_sklearn.classification import ID3DecisionTreeClassifier
 from simple_sklearn.classification.tree_structure import (
-    DecisionTreeNode,
-    ID3SplitterNode,
-    LeafNode,
+    ID3DecisionTreeNode,
 )
 from tests.classification.testing_utils import assert_valid_classification_predictions
 from tests.testing_utils import assert_attributes_match_types
@@ -34,7 +31,7 @@ def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDAr
         "classes_": NDArray[np.str_],
         "num_features_": int,
         "feature_unique_values_": list[set[int]],
-        "tree_": DecisionTreeNode,
+        "tree_": ID3DecisionTreeNode,
     }
 
     clf = ID3DecisionTreeClassifier()
@@ -56,23 +53,9 @@ def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDAr
         assert unique_vals == set(X[:, i])
 
     # Validate tree_ attribute
-    # The root must resolve to either a split or a terminal leaf
-    assert isinstance(clf.tree_, (ID3SplitterNode, LeafNode))
+    # TODO test-cov iter_branches()
 
     # Check predictions
     y_pred = clf.predict(X_pred)
     assert_valid_classification_predictions(X_pred, y_pred, y, clf.classes_)
     assert list(y_pred) == ["y1", "y1", "y1", "y0", "y1"]
-
-
-def test_id3_decision_tree_predict_unknown_node() -> None:
-    clf = ID3DecisionTreeClassifier()
-    clf.fit([[0, 0]], [0])
-
-    class DummyNode(DecisionTreeNode):
-        pass
-
-    clf.tree_ = DummyNode()
-
-    with pytest.raises(TypeError, match="Unknown node type encountered"):
-        clf.predict([[0, 0]])
