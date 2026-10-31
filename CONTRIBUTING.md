@@ -21,6 +21,10 @@ Because of this, **all Pull Request titles must follow the
 * Example bug fix: `fix(dbscan): resolve zero-division error`
 * Example docs: `docs: update roadmap in README`
 
+A complete list of accepted commit prefixes (types) and their visibility in the generated changelog
+can be found in the [`release-please-config.json`][release-please-config-url] file in the root
+of the repository.
+
 If your PR does not follow this structure, the automated CI/CD pipeline will fail to interpret
 the changes for semantic versioning.
 
@@ -147,3 +151,4 @@ Before submitting your PR, please ensure you have completed the following checkl
 [uv-url]: https://github.com/astral-sh/uv
 [ruff-url]: https://github.com/astral-sh/ruff
 [pypi-url]: https://pypi.org/p/simple-sklearn
+[release-please-config-url]: https://github.com/Artem259/simple-sklearn/blob/main/release-please-config.json
