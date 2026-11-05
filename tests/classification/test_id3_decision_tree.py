@@ -4,9 +4,10 @@ from numpy.typing import NDArray
 from simple_sklearn.classification import ID3DecisionTreeClassifier
 from simple_sklearn.classification.tree_structure import (
     ID3DecisionTreeNode,
+    LeafNode,
 )
 from tests.classification.testing_utils import assert_valid_classification_predictions
-from tests.testing_utils import assert_attributes_match_types
+from tests.testing_utils import assert_attributes_match_types, assert_matches_type
 
 
 def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]]) -> None:
@@ -53,7 +54,28 @@ def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDAr
         assert unique_vals == set(X[:, i])
 
     # Validate tree_ attribute
-    # TODO test-cov iter_branches()
+    # Traverse tree recursively and check each node
+    def assert_valid_id3_tree(
+        node: ID3DecisionTreeNode,
+        used_features: frozenset[int] = frozenset(),
+    ) -> None:
+        assert_matches_type(node, ID3DecisionTreeNode)
+
+        if isinstance(node, LeafNode):
+            assert 0 <= node.label < len(unique_classes)
+            return
+
+        assert 0 <= node.majority_label < len(unique_classes)
+        assert 0 <= node.feat_index < n_features
+        assert node.feat_index not in used_features
+        assert set(node.children.keys()) == clf.feature_unique_values_[node.feat_index]
+
+        branches = list(node.iter_branches())
+        assert dict(branches) == node.children
+        for _, child_node in branches:
+            assert_valid_id3_tree(child_node, used_features | {node.feat_index})
+
+    assert_valid_id3_tree(clf.tree_)
 
     # Check predictions
     y_pred = clf.predict(X_pred)

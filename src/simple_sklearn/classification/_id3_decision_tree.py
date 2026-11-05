@@ -188,9 +188,14 @@ class ID3SplitterNode(SplitterNode):
 
     children: dict[Any, "ID3DecisionTreeNode"] = field(default_factory=dict)
 
-    def iter_branches(self) -> Iterator[tuple[Any, "ID3DecisionTreeNode"]]:  # TODO fix docs displaying
-        """Yield pairs of `(feature_value, child_node)` for each categorical branch."""
-        yield from self.children.items()  # TODO test-cov
+    def iter_branches(self) -> Iterator[tuple[Any, "ID3DecisionTreeNode"]]:
+        """Yield pairs of `(feature_value, child_node)` for tree traversal.
+
+        Returns:
+            An iterator of tuples where the first element is the categorical
+                feature value and the second element is the child `ID3DecisionTreeNode`.
+        """
+        yield from self.children.items()
 
 
 ID3DecisionTreeNode: TypeAlias = ID3SplitterNode | LeafNode

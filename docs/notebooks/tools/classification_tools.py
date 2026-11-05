@@ -11,7 +11,6 @@ from simple_sklearn.classification import (
 )
 from simple_sklearn.classification.tree_structure import (
     DecisionTreeNode,
-    ID3SplitterNode,
     LeafNode,
 )
 
@@ -65,14 +64,13 @@ def id3_decision_tree_classifier_info(
 
         if isinstance(node, LeafNode):
             print(prefix + connector + f"Label: {node.label}")
-        if isinstance(node, ID3SplitterNode):
+        else:
             print(
                 prefix + connector + f"Feature[{node.feat_index + 1}]"
             )
-
-            children_items = list(node.children.items())
-            for i, (feat_value, child) in enumerate(children_items):
-                is_last_child = i == len(children_items) - 1
+            branches = list(node.iter_branches())
+            for i, (feat_value, child) in enumerate(branches):
+                is_last_child = i == len(branches) - 1
                 print(new_prefix + f"({feat_value})")
                 display_tree(
                     child, prefix=new_prefix, is_last=is_last_child
