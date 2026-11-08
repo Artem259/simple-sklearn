@@ -1,3 +1,4 @@
+import types
 import typing
 from typing import Any, get_args, get_origin
 
@@ -14,6 +15,51 @@ def _unwrap_alias(type_hint: Any) -> Any:
     return type_hint
 
 
+def _assert_union_type(obj: Any, args: tuple[Any, ...]) -> None:
+    """Asserts that an object matches at least one type in a Union."""
+    for arg in args:
+        try:
+            assert_matches_type(obj, arg)
+            return
+        except AssertionError:
+            continue
+    raise AssertionError(f"Expected one of {[getattr(a, '__name__', str(a)) for a in args]}, got {type(obj).__name__}")
+
+
+def _assert_ndarray_type(obj: Any, args: tuple[Any, ...]) -> None:
+    """Asserts that a NDArray matches the expected dtype."""
+    # If the array type is unparameterized (e.g., just `NDArray` or `np.ndarray`)
+    if not args:
+        return
+
+    dtype_hint = args[1] if len(args) == 2 else args[0]
+    origin_dtype = get_origin(dtype_hint) or getattr(dtype_hint, "__origin__", None)
+
+    if origin_dtype is np.dtype:
+        dtype_args = get_args(dtype_hint)
+        expected_dtype = dtype_args[0] if dtype_args else Any
+    else:
+        expected_dtype = dtype_hint
+
+    if expected_dtype is not Any:
+        assert np.issubdtype(obj.dtype, expected_dtype), (
+            f"Expected array of dtype {getattr(expected_dtype, '__name__', str(expected_dtype))}, got {obj.dtype}"
+        )
+
+
+def _assert_iterable_type(obj: Any, args: tuple[Any, ...]) -> None:
+    """Asserts that elements of an iterable match the expected inner type."""
+    if not args or isinstance(obj, (str, bytes)):
+        return
+
+    expected_inner_type = args[0]
+    for i, item in enumerate(obj):
+        try:
+            assert_matches_type(item, expected_inner_type)
+        except AssertionError as e:
+            raise AssertionError(f"At index [{i}] -> {e}") from None
+
+
 def assert_matches_type(obj: Any, type_hint: Any) -> None:
     """Recursively asserts that an object matches a nested type hint (e.g., list[list[int]])."""
     if type_hint is Any:
@@ -23,42 +69,26 @@ def assert_matches_type(obj: Any, type_hint: Any) -> None:
     origin = get_origin(type_hint)
     args = get_args(type_hint)
 
+    # Check for Union Type (typing.Union or types.UnionType)
+    is_union = origin is typing.Union or origin is getattr(types, "UnionType", None)
+    if is_union:
+        _assert_union_type(obj, args)
+        return
+
     if origin is None:
         assert isinstance(obj, type_hint), (
             f"Expected {getattr(type_hint, '__name__', str(type_hint))}, got {type(obj).__name__}"
         )
         return
-    origin = get_origin(_unwrap_alias(origin)) or _unwrap_alias(origin)
 
+    origin = get_origin(_unwrap_alias(origin)) or _unwrap_alias(origin)
     assert isinstance(obj, origin), f"Expected {getattr(origin, '__name__', str(origin))}, got {type(obj).__name__}"
 
     if origin is np.ndarray:
-        # If the array type is unparameterized (e.g., just `NDArray` or `np.ndarray`)
-        if not args:
-            return
-
-        dtype_hint = args[1] if len(args) == 2 else args[0]
-
-        origin_dtype = get_origin(dtype_hint) or getattr(dtype_hint, "__origin__", None)
-        if origin_dtype is np.dtype:
-            dtype_args = get_args(dtype_hint)
-            expected_dtype = dtype_args[0] if dtype_args else Any
-        else:
-            expected_dtype = dtype_hint
-
-        if expected_dtype is not Any:
-            assert np.issubdtype(obj.dtype, expected_dtype), (
-                f"Expected array of dtype {getattr(expected_dtype, '__name__', str(expected_dtype))}, got {obj.dtype}"
-            )
+        _assert_ndarray_type(obj, args)
         return
 
-    if args and not isinstance(obj, (str, bytes)):
-        expected_inner_type = args[0]
-        for i, item in enumerate(obj):
-            try:
-                assert_matches_type(item, expected_inner_type)
-            except AssertionError as e:
-                raise AssertionError(f"At index [{i}] -> {e}") from None
+    _assert_iterable_type(obj, args)
 
 
 def assert_attributes_match_types(estimator: Any, type_map: dict[str, Any]) -> None:

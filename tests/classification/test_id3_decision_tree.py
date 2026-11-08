@@ -1,15 +1,13 @@
 import numpy as np
-import pytest
 from numpy.typing import NDArray
 
 from simple_sklearn.classification import ID3DecisionTreeClassifier
 from simple_sklearn.classification.tree_structure import (
-    DecisionTreeNode,
-    ID3SplitterNode,
+    ID3DecisionTreeNode,
     LeafNode,
 )
 from tests.classification.testing_utils import assert_valid_classification_predictions
-from tests.testing_utils import assert_attributes_match_types
+from tests.testing_utils import assert_attributes_match_types, assert_matches_type
 
 
 def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDArray[np.str_]]) -> None:
@@ -34,7 +32,7 @@ def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDAr
         "classes_": NDArray[np.str_],
         "num_features_": int,
         "feature_unique_values_": list[set[int]],
-        "tree_": DecisionTreeNode,
+        "tree_": ID3DecisionTreeNode,
     }
 
     clf = ID3DecisionTreeClassifier()
@@ -56,23 +54,30 @@ def test_id3_decision_tree_fit_predict(dataset_4f: tuple[NDArray[np.int64], NDAr
         assert unique_vals == set(X[:, i])
 
     # Validate tree_ attribute
-    # The root must resolve to either a split or a terminal leaf
-    assert isinstance(clf.tree_, (ID3SplitterNode, LeafNode))
+    # Traverse tree recursively and check each node
+    def assert_valid_id3_tree(
+        node: ID3DecisionTreeNode,
+        used_features: frozenset[int] = frozenset(),
+    ) -> None:
+        assert_matches_type(node, ID3DecisionTreeNode)
+
+        if isinstance(node, LeafNode):
+            assert 0 <= node.label < len(unique_classes)
+            return
+
+        assert 0 <= node.majority_label < len(unique_classes)
+        assert 0 <= node.feat_index < n_features
+        assert node.feat_index not in used_features
+        assert set(node.children.keys()) == clf.feature_unique_values_[node.feat_index]
+
+        branches = list(node.iter_branches())
+        assert dict(branches) == node.children
+        for _, child_node in branches:
+            assert_valid_id3_tree(child_node, used_features | {node.feat_index})
+
+    assert_valid_id3_tree(clf.tree_)
 
     # Check predictions
     y_pred = clf.predict(X_pred)
     assert_valid_classification_predictions(X_pred, y_pred, y, clf.classes_)
     assert list(y_pred) == ["y1", "y1", "y1", "y0", "y1"]
-
-
-def test_id3_decision_tree_predict_unknown_node() -> None:
-    clf = ID3DecisionTreeClassifier()
-    clf.fit([[0, 0]], [0])
-
-    class DummyNode(DecisionTreeNode):
-        pass
-
-    clf.tree_ = DummyNode()
-
-    with pytest.raises(TypeError, match="Unknown node type encountered"):
-        clf.predict([[0, 0]])
