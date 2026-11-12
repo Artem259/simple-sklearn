@@ -1,34 +1,52 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
-      - id: check-yaml
-        args: [ --unsafe ]
       - id: check-toml
+      - id: check-json
+      - id: check-case-conflict
+      - id: check-merge-conflict
+        args: [ --assume-in-merge ]
+      - id: detect-private-key
       - id: check-added-large-files
         exclude: ^uv\.lock$
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.23.0
+    rev: c01a1853c19b175aee6a09f24e2ad9b748c485ad  # frozen: v0.24.1
     hooks:
       - id: markdownlint-cli2
         types: [markdown]
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.38.0
+    rev: cba56bcde1fdd01c1deb3f945e69764c291a6530  # frozen: v1.38.0
     hooks:
       - id: yamllint
         args: [ --strict ]
 
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.9.1
+    rev: f5da19ce3b7b40e97c12ee9cd8ce97f48f97ddf7  # frozen: 0.9.1
     hooks:
       - id: nbstripout
         args:
           - --extra-keys
           - "metadata.language_info.version metadata.kernelspec"
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: 914e7df21a07ef503a81201c76d2b11c789d3fca  # frozen: v1.7.12
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/henryiii/validate-pyproject-schema-store
+    rev: eb9d2ee49691b226cf0c8442f3252de793df11f5  # frozen: 2026.11.12
+    hooks:
+      - id: validate-pyproject
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: 2ca41cc1372d1e939a6a879f18cdc19fc1cac1ce  # frozen: v8.30.0
+    hooks:
+      - id: gitleaks
 
   - repo: local
     hooks:
