@@ -4,11 +4,13 @@ This module provides the `KNeighborsClassifier` class.
 """
 
 import heapq
-from typing import Any
+import numbers
+from typing import Any, ClassVar
 
 import numpy as np
 from numpy.typing import NDArray
-from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.base import BaseEstimator, ClassifierMixin, _fit_context
+from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import type_of_target
 from sklearn.utils.validation import check_is_fitted, validate_data
 from typing_extensions import Self
@@ -35,6 +37,12 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         fitted_y_: The validated and label-encoded target values array.
     """
 
+    _parameter_constraints: ClassVar[dict[str, list[Any]]] = {
+        "n_neighbors": [Interval(numbers.Integral, 1, None, closed="left")],
+        "weights": [StrOptions({"uniform", "distance", "distance_squared"})],
+        "eps": [Interval(numbers.Real, 0, 1, closed="neither")],
+    }
+
     classes_: NDArray[Any]
     fitted_x_: NDArray[Any]
     fitted_y_: NDArray[Any]
@@ -45,6 +53,7 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         self.weights = weights
         self.eps = eps
 
+    @_fit_context(prefer_skip_nested_validation=True)  # type: ignore[untyped-decorator]
     def fit(self, X: Any, y: Any) -> Self:
         """Fit the k-nearest neighbors classification model.
 
@@ -60,7 +69,6 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         """
         X, y = validate_data(self, X, y)
         X = np.array(X)
-        self._validate_self_params()
 
         if type_of_target(y) in ("continuous", "continuous-multioutput"):
             raise ValueError(f"Unknown label type: {type_of_target(y)}")
@@ -195,26 +203,3 @@ class KNeighborsClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         distances_squared = np.sum((X_targets - x_source) ** 2, axis=1)
         distances = np.sqrt(distances_squared)
         return distances, distances_squared
-
-    def _validate_self_params(self) -> None:
-        """Validate the hyperparameters.
-
-        Raises:
-            ValueError: If `n_neighbors` is not a positive integer, if `weights` is not
-                one of the supported string literals, or if `eps` is not a float in the range (0, 1).
-        """
-        if not isinstance(self.n_neighbors, int) or self.n_neighbors < 1:
-            raise ValueError(
-                f"The 'n_neighbors' parameter of KNeighborsClassifier must be an int in the range [1, inf). "
-                f"Got {self.n_neighbors} instead."
-            )
-        if self.weights not in ("distance", "distance_squared", "uniform"):
-            raise ValueError(
-                f"The 'weights' parameter of KNeighborsClassifier must be a str among "
-                f"{{'distance', 'distance_squared', 'uniform'}}. Got '{self.weights}' instead."
-            )
-        if not isinstance(self.eps, float) or not 0 < self.eps < 1:
-            raise ValueError(
-                f"The 'eps' parameter of KNeighborsClassifier must be a float in the range (0.0, 1). "
-                f"Got {self.eps} instead."
-            )

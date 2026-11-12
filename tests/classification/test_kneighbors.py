@@ -97,32 +97,32 @@ def test_kneighbors_matches_sklearn_on_simple_data(
         ({"n_neighbors": 0}, ValueError, r"must be an int in the range \[1, inf\)\. Got 0", False),
         ({"n_neighbors": -1}, ValueError, r"must be an int in the range \[1, inf\)\. Got -1", False),
         ({"n_neighbors": 3.5}, ValueError, r"must be an int in the range \[1, inf\)\. Got 3\.5", False),
-        ({"n_neighbors": "a"}, ValueError, r"must be an int in the range \[1, inf\)\. Got a", False),
+        ({"n_neighbors": "a"}, ValueError, r"must be an int in the range \[1, inf\)\. Got 'a'", False),
         # weights checks
         (
             {"weights": "invalid_weight"},
             ValueError,
-            r"must be a str among \{'distance', 'distance_squared', 'uniform'\}\. Got 'invalid_weight'",
+            r"must be a str among \{.*?\}\. Got 'invalid_weight'",
             False,
         ),
         (
             {"weights": 123},
             ValueError,
-            r"must be a str among \{'distance', 'distance_squared', 'uniform'\}\. Got '123'",
+            r"must be a str among \{.*?\}\. Got 123",
             False,
         ),
         (
             {"weights": None},
             ValueError,
-            r"must be a str among \{'distance', 'distance_squared', 'uniform'\}\. Got 'None'",
+            r"must be a str among \{.*?\}\. Got None",
             False,
         ),
         # eps checks
-        ({"eps": 0.0}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got 0\.0", False),
-        ({"eps": 1.0}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got 1\.0", False),
-        ({"eps": -0.1}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got -0\.1", False),
-        ({"eps": 1}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got 1", False),
-        ({"eps": "1e-9"}, ValueError, r"must be a float in the range \(0\.0, 1\)\. Got 1e-9", False),
+        ({"eps": 0.0}, ValueError, r"must be a float in the range \(0\.0, 1\.0\)\. Got 0\.0", False),
+        ({"eps": 1.0}, ValueError, r"must be a float in the range \(0\.0, 1\.0\)\. Got 1\.0", False),
+        ({"eps": -0.1}, ValueError, r"must be a float in the range \(0\.0, 1\.0\)\. Got -0\.1", False),
+        ({"eps": 1}, ValueError, r"must be a float in the range \(0\.0, 1\.0\)\. Got 1", False),
+        ({"eps": "1e-9"}, ValueError, r"must be a float in the range \(0\.0, 1\.0\)\. Got '1e-9'", False),
     ],
 )
 def test_kneighbors_parameter_validation_exceptions(
