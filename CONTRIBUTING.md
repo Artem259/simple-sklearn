@@ -34,16 +34,16 @@ the changes for semantic versioning.
 
 ### Prerequisites
 
-* [uv](https://docs.astral.sh/uv/) (automatically installs Python 3.10, creates `.venv`, and manages dependencies)
-* Git
+* Git.
+* [uv](https://docs.astral.sh/uv/): automatically installs Python 3.10, creates `.venv`, and manages dependencies.
+* *(optional)* [just](https://just.systems/man/en/): cross-platform command runner.
 
 ### Workflow
 
-The project uses `uv` for dependency and environment management, alongside a `Makefile` to simplify
-common development tasks.
+The project uses `uv` for dependency and environment management, alongside a `justfile` to simplify
+common development tasks across Linux, macOS, and Windows.
 
-*Note for Windows users: the `make` tool is not natively installed on Windows, so direct `uv` fallback commands
-are provided below.*
+Running `just` with no arguments displays all available recipes grouped by category.
 
 1. **Fork and clone the repository:**
 
@@ -75,13 +75,13 @@ are provided below.*
     `uv` automatically creates a `.venv` virtual environment in the project root and installs the
     package in editable mode along with all locked development dependencies.
 
-    **Using `make` (Linux/macOS):**
+    **Using `just`:**
 
     ```bash
-    make setup
+    just setup
     ```
 
-    **Manual commands (Windows / without `make`):**
+    **Manual commands (without `just`):**
 
     ```bash
     uv sync --locked
@@ -93,13 +93,15 @@ are provided below.*
     The project uses `ruff` for formatting/linting, `mypy` for static type checking, and `pytest` for testing.
 
     ```bash
-    make lint        # Runs pre-commit checks across all files
-    make test        # Runs the pytest suite (stops on first failure)
-    make test-cov    # Runs the pytest suite and generates a coverage report
-    make check       # Runs linting, build verification (sdist/wheel), and tests sequentially
+    just lint        # (alias: l) Run pre-commit checks across all files
+    just test        # (alias: t) Run the pytest suite (stops on first failure)
+    just test-cov    # Run the pytest suite and generate a coverage report
+    just test-lf     # Rerun only the tests that failed in the previous run
+    just build       # (alias: b) Build and validate package distributions
+    just check       # (alias: c) Run lint, test, and build sequentially
     ```
 
-    You can also run `uv run pytest -x` and `uv run pre-commit run --all-files` manually.
+    You can also run `uv run pre-commit run --all-files` and `uv run pytest -x` manually.
 
 6. **Local CI/CD Simulation (Optional):**
 
@@ -107,19 +109,30 @@ are provided below.*
     before opening a PR:
 
     ```bash
-    make act-pr      # Simulates the pull-request workflow locally
+    just act-pr      # Simulate the pull-request workflow locally
     ```
 
-7. **Build documentation locally:**
+7. **Build and serve documentation locally:**
 
     The project uses `mkdocs` with the `mkdocs-jupyter` plugin for demo Jupyter notebooks.
 
     ```bash
-    make docs        # Preview documentation with live-reloading (no notebook execution)
-    make docs-build  # Build and verify documentation strictly, then serve on port 8000
+    just docs        # Preview documentation with live reloading (skips notebook execution)
+    just docs-build  # Build and verify documentation (executes notebooks)
+    just docs-serve  # Serve the built documentation locally on port 8000
     ```
 
     You can also run `uv run mkdocs build --strict` manually.
+
+8. **Clean workspace (Optional):**
+
+    Remove generated development artifacts:
+
+    ```bash
+    just clean
+    ```
+
+    Or run `uv run --no-project python -B scripts/clean.py` manually.
 
 ---
 
@@ -142,7 +155,7 @@ Before submitting your PR, please ensure you have completed the following checkl
 
 * [ ] I have fetched the latest changes from `upstream/main` and rebased my branch if necessary.
 * [ ] My PR is narrowly scoped to address a single feature or bug fix.
-* [ ] `make check` and `make docs-build` (or the equivalent `uv run` commands) pass locally without errors.
+* [ ] `just check` and `just docs-build` (or the equivalent `uv run` commands) pass locally without errors.
 * [ ] I have added or updated tests for my changes, and my changes do not decrease overall test coverage.
 * [ ] I have successfully run scikit-learn estimator checks against any new estimators.
 * [ ] I have updated the docstrings and documentation if my changes affect the API.
