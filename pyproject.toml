@@ -95,7 +95,8 @@ git-only = [
     ".*",
     "data/_*.csv",
     "docs/**",
-    "Makefile",
+    "scripts/**",
+    "justfile",
     "mkdocs.yml",
     "release-please-config.json",
     "uv.lock",
@@ -174,9 +175,12 @@ unfixable = []
     "S101",
     "T201",
 ]
+"scripts/**/*.py" = [
+    "T201",
+]
 
 [tool.mypy]
-files = ["src", "tests"]
+files = ["src", "tests", "scripts"]
 strict = true
 warn_return_any = true
 warn_unused_configs = true

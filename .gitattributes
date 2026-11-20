@@ -1,7 +1,6 @@
 # End-of-line normalization
 * text=auto
 
-Makefile text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
 
@@ -11,7 +10,8 @@ Makefile text eol=lf
 .github/** export-ignore
 data/_*.csv export-ignore
 docs/** export-ignore
-Makefile export-ignore
+scripts/** export-ignore
+justfile export-ignore
 mkdocs.yml export-ignore
 release-please-config.json export-ignore
 uv.lock export-ignore
