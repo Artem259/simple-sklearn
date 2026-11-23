@@ -42,8 +42,18 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
     feature_unique_values_: list[set[Any]]
     tree_: "ID3DecisionTreeNode"
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        max_depth: int | None = None,
+        min_samples_split: int = 2,
+        min_samples_leaf: int = 1,
+        min_gain_to_split: float = 0.0,
+    ) -> None:
         super().__init__()
+        self.max_depth = max_depth
+        self.min_samples_split = min_samples_split  # TODO
+        self.min_samples_leaf = min_samples_leaf  # TODO
+        self.min_gain_to_split = min_gain_to_split  # TODO
 
     def fit(self, X: Any, y: Any) -> Self:
         """Fit the ID3 Decision Tree classification model.
@@ -71,7 +81,7 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         df["y"] = y
 
         self.feature_unique_values_ = [set(df[feat_index]) for feat_index in feat_indices]
-        self.tree_ = self._id3_algorithm(df, set(feat_indices))
+        self.tree_ = self._id3_algorithm(df, 0, set(feat_indices))
 
         return self
 
@@ -108,7 +118,7 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
 
         return np.asarray(self.classes_[y_pred])
 
-    def _id3_algorithm(self, df: pd.DataFrame, feat_indices: set[int]) -> "ID3DecisionTreeNode":
+    def _id3_algorithm(self, df: pd.DataFrame, depth: int, feat_indices: set[int]) -> "ID3DecisionTreeNode":
         """Recursively build the decision tree using the ID3 algorithm.
 
         Args:
@@ -122,14 +132,14 @@ class ID3DecisionTreeClassifier(ClassifierMixin, BaseEstimator):  # type: ignore
         y_counts = df["y"].value_counts()
         most_frequent_y = y_counts.index[0]
 
-        if len(y_counts) == 1 or not feat_indices:
+        if len(y_counts) == 1 or not feat_indices or (self.max_depth is not None and depth >= self.max_depth):
             return LeafNode(label=most_frequent_y)
 
         best_feat = max(feat_indices, key=lambda x: self._information_gain(df, x))
         node = ID3SplitterNode(feat_index=best_feat, majority_label=most_frequent_y)
 
         for best_feat_value, df_group in df.groupby(by=best_feat):
-            child_node = self._id3_algorithm(df_group, feat_indices - {best_feat})
+            child_node = self._id3_algorithm(df_group, depth + 1, feat_indices - {best_feat})
             node.children[best_feat_value] = child_node
 
         all_best_feat_values = self.feature_unique_values_[best_feat]
