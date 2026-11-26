@@ -145,14 +145,6 @@ jobs:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  tests-passed:
-    name: All Tests Passed
-    needs: tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Success
-        run: echo "All matrix tests passed successfully."
-
   docs-build:
     name: Build Documentation
     needs: quality
@@ -201,6 +193,27 @@ jobs:
         with:
           path: site/
           retention-days: 7
+
+  ci-passed:
+    name: CI Passed
+    needs: [ quality, build, tests, docs-build ]
+    if: |
+      always() &&
+      (github.event_name == 'pull_request' || needs.quality.result != 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify upstream needs results
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS_JSON"
+          if echo "$NEEDS_JSON" | jq -e 'to_entries | any(.value.result != "success")' > /dev/null; then
+            echo "CI failed: one or more upstream jobs did not succeed."
+            exit 1
+          fi
+
+      - name: Success
+        run: echo "All CI checks passed successfully."
 
   testpypi-publish:
     name: Publish to TestPyPI
